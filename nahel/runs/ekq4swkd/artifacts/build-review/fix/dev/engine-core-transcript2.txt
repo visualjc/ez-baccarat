@@ -1,0 +1,13 @@
+== engine-core re-drive after fix step 2026-08-25T03:05:08Z ==
+-- bun test:
+ 0 fail
+ 149 expect() calls
+Ran 9 tests across 1 file. [9.00ms]
+-- tsc:
+src/engine/engine.test.ts(1,40): error TS2307: Cannot find module 'bun:test' or its corresponding type declarations.
+src/engine/shoe.ts(123,47): error TS2304: Cannot find name 'Rank'.
+src/engine/shoe.ts(125,87): error TS2304: Cannot find name 'Rank'.
+-- bun run build:
+✓ built in 38ms
+-- dev server + healthcheck:
+healthcheck OK

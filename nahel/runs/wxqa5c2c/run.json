@@ -1,0 +1,13 @@
+{
+  "id": "wxqa5c2c",
+  "item": "9x1w62ms",
+  "actor": {
+    "kind": "agent",
+    "id": "claude"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T02:55:56Z",
+  "ended": "2026-08-25T03:00:04Z"
+}
