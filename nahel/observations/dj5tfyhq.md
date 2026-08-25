@@ -1,0 +1,12 @@
+---
+id: dj5tfyhq
+name: ezb-founding-and-approval
+created: 2026-08-25T05:44:02Z
+tags:
+  - founding
+  - prd
+sources:
+  - pwc0v0gz
+  - 4bf01bz6
+---
+Hands-off standard-tier founding: Jim's signed paragraph (founding act x75grrxj under human:jim via journaled delegation), elaboration cross-vendor verified by gpt-5.6-terra at manifest 906d32c9; PRD approved by delegated consensus after one accepted disagreement round (terra caught the banker-tableau misstatement and a count-arithmetic error in the draft PRD).
