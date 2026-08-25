@@ -1,0 +1,2 @@
+{"id":"d1rk53a1","ts":"2026-08-25T17:24:23Z","seq":0,"type":"item.created","actor":{"kind":"agent","id":"claude-code"},"item":"xa1d7wj7","payload":{"target":"item","record":{"id":"xa1d7wj7","name":"double-wager-button","type":"feature","status":"backlog","lane":"direct","depends_on":[],"external_refs":[],"created":"2026-08-25T17:24:23Z","updated":"2026-08-25T17:24:23Z"},"body":""}}
+{"id":"4wm9b5b3","ts":"2026-08-25T17:24:23Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}
