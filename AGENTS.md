@@ -22,3 +22,28 @@ This project is managed with Nahel: durable, tool-agnostic project state under `
 - **Respect claims.** An item with `claimed_by` set is in human hands; the CLI refuses agent mutations on it (and its subtree) until `nahel handback`.
 - **Everything is conversational.** Every workflow can be driven through pure conversation — slash commands are conveniences, never the only door. The canonical procedures live in `nahel/workflows/*.md`; `nahel install --agent <your-agent>` generates slash-command shims that just load them.
 <!-- nahel:end orientation -->
+
+## Finding code in this repository
+
+This repo is CodeGraph-indexed: a `.codegraph/` SQLite graph of every symbol, call edge, and file under `src/`. It is gitignored — if it is missing on your machine, run `codegraph init .` once (a few hundred milliseconds).
+
+**Query the graph before you grep.** One call returns the relevant symbols' verbatim, line-numbered source PLUS the call paths between them and a blast-radius summary naming the covering tests — replacing a grep-then-Read-whole-file loop with a single round-trip. It follows the event-bus and dynamic-dispatch hops that grep cannot see (`dealRound` → `bus.emit` → `mountCountPanel`).
+
+- **Shell — works for every agent, no MCP needed:**
+  - `codegraph explore "<symbols or question>"` — the default door; start here.
+  - `codegraph node <symbol>` — one symbol's source plus its caller/callee trail.
+  - `codegraph callers <symbol>` / `codegraph impact <symbol>` — who breaks if you change it.
+  - `codegraph affected <changed files>` — the test files to run for a change.
+- **MCP — when your agent has the tools:** `codegraph_explore`, `codegraph_node`. Same output as the shell commands.
+
+**Sync after you edit.** Run `codegraph sync` once you have changed source and before you query again — a stale index answers with the old code.
+
+**Grep is still right for non-code text:** markdown docs, `nahel/` journal JSONL, CSS. The graph indexes code symbols, not prose.
+
+Worked example — tracing the count seam from engine to panel:
+
+```sh
+codegraph explore "count panel round settled bus"
+```
+
+returns `advanceRoundCountState` in `src/engine/counts.ts`, the `CountRoundResult` payload crossing `src/ui/bus.ts`, and `mountCountPanel` in `src/ui/count-panel.ts` — three files, one call, no guessing at filenames.
