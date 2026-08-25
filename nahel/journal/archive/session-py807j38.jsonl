@@ -1,0 +1,2 @@
+{"id":"rrdgf9b0","ts":"2026-08-25T05:25:01Z","seq":0,"type":"item.created","actor":{"kind":"agent","id":"claude-code"},"item":"h7g4w2rg","payload":{"target":"item","record":{"id":"h7g4w2rg","name":"over-wager-accepted","type":"bug","status":"backlog","lane":"direct","parent":"dh6xeqdg","depends_on":[],"external_refs":[],"playbook":"build-review","created":"2026-08-25T05:25:01Z","updated":"2026-08-25T05:25:01Z"},"body":""}}
+{"id":"b8x455ed","ts":"2026-08-25T05:25:01Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

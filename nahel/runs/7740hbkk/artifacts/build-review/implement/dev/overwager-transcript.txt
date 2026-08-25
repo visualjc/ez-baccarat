@@ -1,0 +1,4 @@
+== over-wager fix re-drive (host browser, seed 32) ==
+8 clicks of $1,000 chip against $4,350 bankroll: stopped at $4,000 wagered (next chip would exceed) — guard live at the boundary
+natural seed-1 round after fix: $1 player bet won, bankroll 4350->4351, 4 cards only, persistence across page loads confirmed
+suite 65/65, tsc clean

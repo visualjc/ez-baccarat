@@ -10,7 +10,7 @@ import { mountControls } from "./controls";
 import { mountHandZone } from "./hand-zone";
 import { mountOutcomeBanner } from "./outcome-banner";
 import { mountRoundTimeline, type TimelineStep } from "./round-timeline";
-import { computeBetMultipliers, settlementNet } from "./state";
+import { canPlaceChip, computeBetMultipliers, settlementNet } from "./state";
 import { mountShoe } from "./shoe-box";
 import type { BetHistory, BetKind } from "./types";
 
@@ -142,6 +142,7 @@ export function mountTableView(host: HTMLElement, deps: TableViewDeps): TableVie
     onSpotInteraction: () => deps.onWagersChanged?.(),
     onInvalidBet: () => deps.announce("Wager exceeds bankroll."),
   });
+  betLayout.setCanPlace((amount) => canPlaceChip(bankroll.get(), betLayout.snapshot(), amount));
 
   const celebrationLayer = document.createElement("div");
   celebrationLayer.id = "celebration-layer";

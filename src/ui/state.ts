@@ -102,5 +102,9 @@ export function settlementNet(history: BetHistory, settlement: Settlement): numb
 }
 
 export function applyBankrollDelta(bankroll: number, delta: number): number {
-  return Math.max(0, Math.round(bankroll + delta));
+  const next = Math.round(bankroll + delta);
+  if (next < 0) {
+    throw new Error(`Bankroll invariant violated: ${bankroll} + ${delta} would be ${next}.`);
+  }
+  return next;
 }

@@ -50,16 +50,26 @@ describe("bet state reducer", () => {
     expect(totalWager(removed.history)).toBe(5);
   });
 
-  test("caps placement and rebet against bankroll", () => {
-    const history = cloneBetHistory({
-      player: [100, 25],
-      dragon: [25],
-    });
+  test("refuses over-bankroll scripted placements across spots without changing state", () => {
+    let history = cloneBetHistory({ player: [75] });
+    const place = (kind: keyof typeof history, amount: number) => {
+      if (!canPlaceChip(100, history, amount)) {
+        return false;
+      }
+      history = placeChip(history, kind, amount);
+      return true;
+    };
 
-    expect(canPlaceChip(200, history, 25)).toBe(true);
-    expect(canPlaceChip(149, history, 25)).toBe(false);
-    expect(canRestoreHistory(150, history)).toBe(true);
-    expect(canRestoreHistory(149, history)).toBe(false);
+    expect(place("banker", 25)).toBe(true);
+    expect(totalWager(history)).toBe(100);
+
+    const beforeDeniedPlacement = history;
+    expect(place("panda", 1)).toBe(false);
+    expect(history).toBe(beforeDeniedPlacement);
+    expect(history).toEqual(cloneBetHistory({ player: [75], banker: [25] }));
+
+    expect(canRestoreHistory(100, history)).toBe(true);
+    expect(canRestoreHistory(99, history)).toBe(false);
   });
 });
 
@@ -84,8 +94,8 @@ describe("settlement math", () => {
     expect(settlementNet(history, result)).toBe(199);
   });
 
-  test("clamps bankroll at zero after losses", () => {
+  test("rejects a settlement that would make bankroll negative", () => {
     expect(applyBankrollDelta(1000, 285)).toBe(1285);
-    expect(applyBankrollDelta(25, -100)).toBe(0);
+    expect(() => applyBankrollDelta(25, -100)).toThrow("Bankroll invariant violated");
   });
 });
