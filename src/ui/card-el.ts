@@ -8,9 +8,38 @@ export interface CardHandle {
 
 const SUITS = ["♠", "♥", "♦", "♣"] as const;
 
+const SPOKEN_SUIT: Record<(typeof SUITS)[number], string> = {
+  "♠": "spades",
+  "♥": "hearts",
+  "♦": "diamonds",
+  "♣": "clubs",
+};
+
+const SPOKEN_RANK: Partial<Record<Card["rank"], string>> = {
+  A: "ace",
+  T: "ten",
+  J: "jack",
+  Q: "queen",
+  K: "king",
+};
+
+/** The suit a card is drawn with — decoration, derived from its deck position. */
+export function suitOf(card: Card): (typeof SUITS)[number] {
+  return SUITS[card.id % SUITS.length]!;
+}
+
+/**
+ * The card's full identity in words. The face is aria-hidden, so this is the
+ * only route a screen reader has to what a sighted player reads off the card.
+ */
+export function spokenCard(card: Card): string {
+  const suit = suitOf(card);
+  return `${SPOKEN_RANK[card.rank] ?? card.rank} of ${SPOKEN_SUIT[suit]}`;
+}
+
 export function createCard(card: Card): CardHandle {
   const rank = card.rank;
-  const suit = SUITS[card.id % SUITS.length];
+  const suit = suitOf(card);
 
   const root = document.createElement("div");
   root.className = "card";

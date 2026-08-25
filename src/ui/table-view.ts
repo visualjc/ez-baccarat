@@ -1,4 +1,5 @@
 import type { Card } from "../engine/card";
+import { spokenCard } from "./card-el";
 import type { RoundResult } from "../engine/engine";
 import { mountBankroll } from "./bankroll";
 import { mountBetLayout } from "./bet-layout";
@@ -190,7 +191,7 @@ export function mountTableView(host: HTMLElement, deps: TableViewDeps): TableVie
     onCardSeen: (seat, card, index, isThird) => {
       deps.bus.emit({ type: "card:seen", card, seat, index });
       const ordinal = isThird ? "third card" : `${index + 1}${index === 0 ? "st" : index === 1 ? "nd" : "rd"} card`;
-      deps.announce(`${seat === "player" ? "Player" : "Banker"} ${ordinal} ${card.rank}.`);
+      deps.announce(`${seat === "player" ? "Player" : "Banker"} ${ordinal} ${spokenCard(card)}.`);
     },
     onTotals: (playerTotal, bankerTotal) => {
       playerHand.setTotal(playerTotal);
