@@ -17,10 +17,12 @@ bun install
 bun run dev
 ```
 
-The published site is built from `main` and pushed to the `gh-pages` branch by
-`scripts/deploy-pages.sh`, which GitHub Pages serves. Deploying from a branch
-rather than from Actions keeps the parked workflow at `docs/deploy/pages.yml`
-optional: this repo's push credential has `repo` but not `workflow` scope.
+The published site is pushed to the `gh-pages` branch by
+`scripts/deploy-pages.sh`, which GitHub Pages serves. The script refuses to run
+unless `main` is checked out and the working tree is clean, so what ships is
+always reviewed and merged. Deploying from a branch rather than from Actions
+keeps the parked workflow at `docs/deploy/pages.yml` optional: this repo's push
+credential has `repo` but not `workflow` scope.
 
 ## Count systems
 
