@@ -1,7 +1,7 @@
 import { RANKS, type Card } from "../engine/card";
 import { DRAGON_COUNT_THRESHOLD, DRAGON_TAG_TABLE, PANDA_COUNT_THRESHOLD, PANDA_TAG_TABLE, dragonTagForRank, pandaTagForRank, type CountCardTrace, type CountPairSignal, type CountRoundTrace } from "../engine/counts";
 import type { GameBus } from "./bus";
-import { decks, signed, spokenSigned, trueCount } from "./count-format";
+import { decks, signed, spokenSigned, thresholdDistance, trueCount } from "./count-format";
 import { describeRound } from "./count-narration";
 import type { GameMode } from "./types";
 
@@ -29,7 +29,7 @@ function renderBlock(view: ReturnType<typeof block>, system: System, before: Cou
   view.trueValue.textContent = trueCount(after.true); view.runValue.textContent = signed(after.running); view.delta.textContent = signed(delta);
   view.delta.className = `count-delta ${signClass(delta)}`;
   view.pill.textContent = isSignal ? "✓ BET" : "· NO BET";
-  const need = Math.abs(threshold(system) - after.true).toFixed(1);
+  const need = thresholdDistance(Math.abs(threshold(system) - after.true));
   view.caption.textContent = isSignal ? `true ≥ +${threshold(system)} · +${need} over` : `needs true ≥ +${threshold(system)} · ${need} to go`;
   view.fill.style.setProperty("--fill", String(Math.max(0, Math.min(after.true / threshold(system), 1))));
   view.el.setAttribute("aria-label", `${system === "dragon" ? "Dragon 7" : "Panda 8"} count: running ${spokenSigned(after.running)}, true ${trueCount(after.true)}, bet ${isSignal ? "on" : "off"}, threshold plus ${threshold(system)}`);
