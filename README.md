@@ -18,11 +18,23 @@ bun run dev
 ```
 
 The published site is pushed to the `gh-pages` branch by
-`scripts/deploy-pages.sh`, which GitHub Pages serves. The script refuses to run
-unless `main` is checked out and the working tree is clean, so what ships is
-always reviewed and merged. Deploying from a branch rather than from Actions
-keeps the parked workflow at `docs/deploy/pages.yml` optional: this repo's push
-credential has `repo` but not `workflow` scope.
+`scripts/deploy-pages.sh`, which GitHub Pages serves:
+
+```sh
+scripts/deploy-pages.sh                       # publish the current main
+DEPLOY_FROM=my-branch scripts/deploy-pages.sh # deliberately publish something else
+```
+
+The script refuses to run unless `main` is checked out and the working tree is
+clean, so what ships is always reviewed and merged; `DEPLOY_FROM` is the
+explicit override for the rare deliberate exception, such as previewing a
+branch. Deploying from a branch rather than from Actions keeps the parked
+workflow at `docs/deploy/pages.yml` optional: this repo's push credential has
+`repo` but not `workflow` scope.
+
+Pages must be configured to serve the **`gh-pages`** branch at `/ (root)`.
+Pointing it at a source branch serves the unbuilt `index.html`, which asks for
+`/src/main.ts` and 404s.
 
 ## Count systems
 
