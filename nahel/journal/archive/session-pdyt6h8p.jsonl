@@ -1,0 +1,2 @@
+{"id":"ez5v2xs0","ts":"2026-08-25T02:42:48Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"x31766d8","payload":{"summary":"assumption: bankroll is play-chips with local-storage persistence and no buy-in ceremony — if Jim wants sessions/stats later it is additive"}}
+{"id":"39m8ensx","ts":"2026-08-25T02:42:48Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

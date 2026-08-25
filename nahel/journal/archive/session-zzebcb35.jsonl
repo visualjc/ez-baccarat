@@ -1,0 +1,2 @@
+{"id":"4327dr5t","ts":"2026-08-25T02:50:50Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"dh6xeqdg","payload":{"summary":"Decomposed into 5 children: engine-core, engine-counts, app-shell-table, count-panel-trainer, full-game-qa (build order); playbook build-review copied onto the four implementable leaves explicitly (no inheritance at read time)"}}
+{"id":"5g2g7v3n","ts":"2026-08-25T02:50:50Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

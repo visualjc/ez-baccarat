@@ -1,0 +1,2 @@
+{"id":"dm8vhae6","ts":"2026-08-25T02:50:50Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"7rfz93dh","payload":{"summary":"scope: PRD F2 + F4.1 — design step produces the palette/animation spec, then the table view: betting chips + keyboard, deal/flip/draw animations, outcome banners with dragon/panda celebrations, burn animation, bankroll in local storage"}}
+{"id":"0cmdq6f1","ts":"2026-08-25T02:50:50Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

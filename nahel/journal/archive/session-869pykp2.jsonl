@@ -1,0 +1,2 @@
+{"id":"rxwqayyt","ts":"2026-08-25T02:42:48Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"x31766d8","payload":{"summary":"assumption: GitHub Pages static hosting is the deliverable surface (public repo already exists) — if wrong, dist/ still stands alone"}}
+{"id":"v8j7fvkh","ts":"2026-08-25T02:42:48Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

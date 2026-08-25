@@ -1,0 +1,23 @@
+== engine-core verify-by-driving 2026-08-25T02:55:14Z ==
+-- bun test:
+ 9 pass
+ 0 fail
+ 149 expect() calls
+Ran 9 tests across 1 file. [8.00ms]
+-- bun run dev (background) + curl:
+<!doctype html>
+<html lang="en">
+  <head>
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>EZ Baccarat</title>
+  </head>
+-- healthcheck:
+healthcheck OK (exit 0)
+-- nahel doctor:
+contract OK: env complete, healthcheck passed
