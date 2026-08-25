@@ -15,6 +15,7 @@ export interface RoundResult {
   playerCards: Card[];
   bankerCards: Card[];
   seenThisRound: Card[];
+  seenThisRoundForCounts: Card[];
   settlement: ReturnType<typeof settleHand>;
   cutCardReachedDuringRound: boolean;
   shoeRetiredAfterRound: boolean;
@@ -93,6 +94,9 @@ export function dealRound(state: EngineState): RoundResult {
   }
 
   const settlement = settleHand(playerCards, bankerCards);
+  const seenThisRoundForCounts = state.roundsPlayed === 0
+    ? [state.exposedBurnCard, ...seenThisRound]
+    : seenThisRound;
   const cutCardReachedDuringRound = state.shoe.retireAfterCurrentRound;
   finalizeRound(state.shoe);
 
@@ -102,6 +106,7 @@ export function dealRound(state: EngineState): RoundResult {
     playerCards,
     bankerCards,
     seenThisRound,
+    seenThisRoundForCounts,
     settlement,
     cutCardReachedDuringRound,
     shoeRetiredAfterRound: state.shoe.retired,

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { Card, RANKS, buildOrderedDeck, valueFromRank } from "./card";
 import { createEngine, dealRound, EngineState } from "./engine";
+import { advanceRoundCountState, createInitialCountState } from "./counts";
 import {
   baccaratPoint,
   shouldBankerDraw,
@@ -230,5 +231,34 @@ describe("shoe lifecycle", () => {
     expect(firstRound.cutCardReachedDuringRound).toBe(true);
     expect(firstRound.shoeRetiredAfterRound).toBe(true);
     expect(() => dealRound(state)).toThrow("shoe retired");
+  });
+});
+
+describe("counting seam", () => {
+  test("includes opening burn card at the front of first-round count input", () => {
+    const state = createEngine({
+      initialCards: [
+        { id: 0, rank: "A", value: 1 },
+        { id: 1, rank: "K", value: 10 },
+        { id: 2, rank: "9", value: 9 },
+        { id: 3, rank: "T", value: 10 },
+        { id: 4, rank: "8", value: 8 },
+        { id: 5, rank: "Q", value: 10 },
+        { id: 6, rank: "7", value: 7 },
+        { id: 7, rank: "2", value: 2 },
+      ],
+      decks: 1,
+      cutOffset: 1,
+      shuffle: false,
+    });
+    const result = dealRound(state);
+
+    expect(result.seenThisRoundForCounts[0].rank).toBe("A");
+    expect(result.seenThisRoundForCounts.slice(1).map((card) => card.rank)).toEqual(
+      result.seenThisRound.map((card) => card.rank),
+    );
+
+    const counts = advanceRoundCountState(createInitialCountState(), result.seenThisRoundForCounts);
+    expect(counts.state.seenCount).toBe(result.seenThisRoundForCounts.length);
   });
 });
