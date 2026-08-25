@@ -206,7 +206,7 @@ button:focus-visible {
   margin-inline: auto;
   width: 100%;
   display: grid;
-  grid-template-rows: 104px minmax(228px, 1fr) 212px 104px;
+  grid-template-rows: 104px minmax(228px, 1fr) 212px minmax(104px, auto);
   /* Rail thickness plus the gutter: the felt's rim stops at --rail-w, the UI
      starts one gutter further in. The felt layers below take --rail-w alone. */
   padding: calc(var(--rail-w) + var(--felt-gutter));
@@ -633,14 +633,31 @@ button:focus-visible {
 }
 
 #row-tray {
-  display: grid;
-  /* Content-sized outer tracks. An explicit minmax() minimum overrides the
-     automatic min-content floor, which is how the action cluster ended up in a
-     track narrower than its own buttons and spilled left across the chips. */
-  grid-template-columns: max-content auto max-content;
-  justify-content: space-between;
+  /* Content-sized and wrapping, rather than three tracks with hand-picked
+     minimums: an explicit minmax() minimum overrides the automatic min-content
+     floor, which is how the action cluster ended up in a track narrower than
+     its own buttons and spilled left across the chips. Wrapping also means the
+     row restacks exactly when the content stops fitting, so no breakpoint has
+     to predict the width at which that happens. */
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   column-gap: var(--tray-gap);
+  row-gap: 12px;
+}
+
+/* The chips take the slack between the bankroll and the buttons and centre
+   themselves in it, which lands them left of the row's midline without
+   crowding the bankroll. */
+.tray-chips {
+  flex: 1 1 auto;
+}
+
+/* On its own wrapped line the cluster keeps the right edge it has when the
+   whole tray fits on one. */
+.tray-actions {
+  margin-left: auto;
 }
 
 .bankroll {
@@ -987,22 +1004,6 @@ button:focus-visible {
     --card-w: 76px;
     --card-h: 108px;
   }
-  /* Bankroll and chips share row one, the buttons take a full-width row two:
-     one row cannot hold 80 + 296 + 376px of content on a 712px felt. */
-  #table-view {
-    grid-template-rows: 104px minmax(228px, 1fr) 212px 120px;
-  }
-
-  #row-tray {
-    grid-template-columns: max-content minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    row-gap: 12px;
-  }
-
-  .tray-bankroll { grid-column: 1; grid-row: 1; }
-  .tray-chips { grid-column: 2; grid-row: 1; justify-self: end; }
-  .tray-actions { grid-column: 1 / -1; grid-row: 2; }
-
   .count-block { height: 118px; }.count-true { font-size: 34px; }.trace-cols, .trace-row { grid-template-columns: 26px 28px 36px 52px 36px 52px; gap: 6px; }.tag-grid { grid-template-columns: repeat(5, 1fr); }
 
 }
@@ -1024,7 +1025,7 @@ button:focus-visible {
   }
 
   #table-view {
-    grid-template-rows: 88px minmax(180px, 1fr) 184px 92px;
+    grid-template-rows: 88px minmax(180px, 1fr) 184px minmax(92px, auto);
   }
 
   #row-hands {
@@ -1044,17 +1045,14 @@ button:focus-visible {
     padding-bottom: 8px;
   }
 
+  /* One control per line, each full width. */
   #row-tray {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  /* Undo the two-row placement inherited from the 1239px block. */
-  .tray-bankroll,
-  .tray-chips,
   .tray-actions {
-    grid-column: auto;
-    grid-row: auto;
-    justify-self: stretch;
+    margin-left: 0;
   }
 
   .actions {
