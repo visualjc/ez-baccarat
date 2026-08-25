@@ -6,6 +6,90 @@ export interface BurnRitualHandle {
   clear(): void;
 }
 
+export interface BurnGridCell {
+  index: number;
+  /** Column position in cell units; a short final row lands on a half column. */
+  column: number;
+  row: number;
+}
+
+export interface BurnGridLayout {
+  columns: number;
+  rows: number;
+  cells: BurnGridCell[];
+}
+
+export interface BurnDurations {
+  expose: number;
+  hold: number;
+  place: number;
+  stagger: number;
+  gridHold: number;
+  gather: number;
+}
+
+export interface BurnWaitSchedule {
+  expose: number;
+  hold: number;
+  place: number;
+  gridHold: number;
+  gather: number;
+}
+
+/** A burn is at most ten cards, so five columns keeps every count to two rows. */
+export const BURN_GRID_MAX_COLUMNS = 5;
+
+/**
+ * The card flips partway through its own expose animation — the rest of the
+ * motion finishes underneath the callout hold.
+ */
+export const BURN_EXPOSE_FLIP_RATIO = 0.55;
+
+/**
+ * The grid shape for a burn of `count` cards: full rows first, and a short
+ * final row centred under them on a half-column offset.
+ */
+export function burnGridLayout(count: number): BurnGridLayout {
+  const total = Math.max(0, Math.floor(count));
+  if (total === 0) {
+    return { columns: 0, rows: 0, cells: [] };
+  }
+
+  const rows = Math.ceil(total / BURN_GRID_MAX_COLUMNS);
+  const columns = Math.ceil(total / rows);
+  const short = rows * columns - total;
+  const cells: BurnGridCell[] = [];
+
+  for (let row = 0; row < rows; row += 1) {
+    const isLastRow = row === rows - 1;
+    const cellsInRow = isLastRow ? columns - short : columns;
+    const offset = isLastRow ? short / 2 : 0;
+    for (let column = 0; column < cellsInRow; column += 1) {
+      cells.push({ index: cells.length, column: column + offset, row });
+    }
+  }
+
+  return { columns, rows, cells };
+}
+
+/** The blocking waits of one burn ritual, in the order `run()` performs them. */
+export function burnWaitSchedule(layout: BurnGridLayout, durations: BurnDurations): BurnWaitSchedule {
+  const lastCell = Math.max(0, layout.cells.length - 1);
+  return {
+    expose: durations.expose * BURN_EXPOSE_FLIP_RATIO,
+    hold: durations.hold,
+    place: lastCell * durations.stagger + durations.place,
+    gridHold: durations.gridHold,
+    gather: durations.gather,
+  };
+}
+
+/** How long the felt stays locked for a burn of this size. */
+export function burnRitualBudget(layout: BurnGridLayout, durations: BurnDurations): number {
+  const schedule = burnWaitSchedule(layout, durations);
+  return schedule.expose + schedule.hold + schedule.place + schedule.gridHold + schedule.gather;
+}
+
 function parseDuration(name: string): number {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   if (value.endsWith("ms")) {
@@ -18,64 +102,94 @@ function parseDuration(name: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function readDurations(): BurnDurations {
+  return {
+    expose: parseDuration("--dur-burn-expose"),
+    hold: parseDuration("--dur-burn-hold"),
+    place: parseDuration("--dur-burn-place"),
+    stagger: parseDuration("--dur-burn-stagger"),
+    gridHold: parseDuration("--dur-burn-grid-hold"),
+    gather: parseDuration("--dur-burn-gather"),
+  };
+}
+
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 export function mountBurnRitual(
   host: HTMLElement,
-  readout: HTMLElement,
   announce: (text: string) => void,
 ): BurnRitualHandle {
   return {
     clear() {
       host.replaceChildren();
-      readout.textContent = "";
     },
     async run(exposedCard, burnCount) {
       this.clear();
 
-      const exposeMs = parseDuration("--dur-burn-expose");
-      const holdMs = parseDuration("--dur-burn-hold");
-      const fanMs = parseDuration("--dur-burn-fan");
+      const durations = readDurations();
+      const layout = burnGridLayout(burnCount);
+      const schedule = burnWaitSchedule(layout, durations);
+
+      const scrim = document.createElement("div");
+      scrim.className = "burn-scrim";
+      scrim.setAttribute("aria-hidden", "true");
 
       const stage = document.createElement("div");
       stage.className = "burn-stage";
 
+      const slot = document.createElement("div");
+      slot.className = "burn-card-slot";
+
       const cardHandle = createCard(exposedCard);
       cardHandle.element.classList.add("burn-card");
-      stage.append(cardHandle.element);
-      host.append(stage);
+      slot.append(cardHandle.element);
+      stage.append(slot);
+      host.append(scrim, stage);
 
       cardHandle.element.classList.add("from-shoe");
-      await wait(exposeMs * 0.55);
-      await cardHandle.flip();
+      await wait(schedule.expose);
+      cardHandle.flip();
       cardHandle.element.classList.add("focused");
 
-      const text = `BURN CARD · ${exposedCard.rank} · burning ${burnCount} cards`;
+      const text = `BURN CARD · ${exposedCard.rank} · burning ${burnCount} ${burnCount === 1 ? "card" : "cards"}`;
       const callout = document.createElement("p");
       callout.className = "burn-callout";
+      // `announce` already routes this to the aria-live status region.
+      callout.setAttribute("aria-hidden", "true");
       callout.textContent = text;
-      host.append(callout);
-      readout.textContent = text;
+      stage.append(callout);
       announce(text);
 
-      await wait(holdMs);
+      await wait(schedule.hold);
 
-      const fanRoot = document.createElement("div");
-      fanRoot.className = "burn-fan";
-      host.append(fanRoot);
+      const grid = document.createElement("div");
+      grid.className = "burn-grid";
+      grid.setAttribute("aria-hidden", "true");
+      grid.style.setProperty("--burn-cols", `${layout.columns}`);
+      grid.style.setProperty("--burn-rows", `${layout.rows}`);
+      grid.style.setProperty("--burn-count", `${layout.cells.length}`);
 
-      for (let index = 0; index < burnCount; index += 1) {
+      for (const cell of layout.cells) {
         const back = document.createElement("span");
-        back.className = "burn-fan-card";
-        back.style.setProperty("--burn-index", `${index}`);
-        back.style.setProperty("--burn-rot", `${index % 2 === 0 ? 5 : -5}deg`);
-        fanRoot.append(back);
-        await wait(40);
+        back.className = "burn-grid-card";
+        back.style.setProperty("--burn-cell", `${cell.index}`);
+        back.style.setProperty("--burn-col", `${cell.column}`);
+        back.style.setProperty("--burn-row", `${cell.row}`);
+        back.style.setProperty("--burn-tilt", cell.index % 2 === 0 ? "6deg" : "-5deg");
+        grid.append(back);
       }
 
-      await wait(fanMs);
+      stage.append(grid);
+
+      await wait(schedule.place);
+      await wait(schedule.gridHold);
+
+      stage.classList.add("is-gathering");
+      scrim.classList.add("is-gathering");
+
+      await wait(schedule.gather);
       this.clear();
     },
   };

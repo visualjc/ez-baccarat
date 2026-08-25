@@ -85,6 +85,13 @@
   --panel-w:          380px;
   --header-h:         56px;
 
+  /* Opening burn ritual */
+  --burn-anchor-x:    25%;
+  --burn-scale:       1.25;
+  --burn-mini-scale:  .5;
+  --burn-cell-gap:    8px;
+  --burn-lane-gap:    clamp(18px, 3vw, 34px);
+
   /* Shadows */
   --shadow-table:     0 26px 60px rgba(0,0,0,0.55);
   --shadow-card:      0 6px 14px var(--card-shadow);

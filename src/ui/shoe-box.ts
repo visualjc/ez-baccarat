@@ -22,6 +22,8 @@ export function mountShoe(host: HTMLElement): ShoeHandle {
   discardCount.textContent = "0";
   discard.append(discardLabel, discardCount);
 
+  // The burn text now lives on the felt callout beside the burn card; this
+  // element stays as the centre column of the shoe row's three-column grid.
   const burnReadout = document.createElement("div");
   burnReadout.className = "burn-readout";
 

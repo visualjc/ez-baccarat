@@ -2,7 +2,9 @@
   --dur-deal: 380ms;  --dur-flip: 300ms;  --dur-third: 520ms;
   --dur-chip: 260ms;  --dur-sweep: 520ms; --dur-pay: 420ms;
   --dur-dragon: 1200ms; --dur-panda: 1100ms;
-  --dur-burn-expose: 500ms; --dur-burn-hold: 1200ms; --dur-burn-fan: 900ms;
+  --dur-burn-expose: 500ms; --dur-burn-hold: 1200ms;
+  --dur-burn-place: 380ms; --dur-burn-stagger: 55ms;
+  --dur-burn-grid-hold: 0ms; --dur-burn-gather: 340ms;
   --dur-banner-in: 320ms; --dur-banner-out: 240ms; --dur-panel: 280ms;
   --ease-deal:  cubic-bezier(.22,.61,.36,1);
   --ease-flip:  cubic-bezier(.45,.05,.55,.95);
@@ -20,7 +22,9 @@
   --anim-panda: calc(var(--dur-panda) * var(--speed-scale));
   --anim-shoe: calc(420ms * var(--speed-scale));
   --anim-burn-expose: calc(var(--dur-burn-expose) * var(--speed-scale));
-  --anim-burn-fan: calc(var(--dur-burn-fan) * var(--speed-scale));
+  --anim-burn-place: calc(var(--dur-burn-place) * var(--speed-scale));
+  --anim-burn-stagger: calc(var(--dur-burn-stagger) * var(--speed-scale));
+  --anim-burn-gather: calc(var(--dur-burn-gather) * var(--speed-scale));
   --anim-banner-in: calc(var(--dur-banner-in) * var(--speed-scale));
   --anim-banner-out: calc(var(--dur-banner-out) * var(--speed-scale));
   --anim-total: calc(300ms * var(--speed-scale));
@@ -65,9 +69,10 @@
   100% { opacity: 1; transform: translateY(calc(var(--stack-index) * -6px)) scale(1); }
 }
 
+/* The oversize lives on .burn-card-slot; this only carries the entry motion. */
 @keyframes burn-expose {
   from { opacity: .2; transform: translate(var(--burn-from-x, 110px), var(--burn-from-y, 18px)) rotate(-8deg) scale(.86); }
-  to { opacity: 1; transform: translateY(-8px) rotate(0deg) scale(1.25); }
+  to { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
 }
 
 @keyframes push-pulse {
@@ -126,15 +131,36 @@
   100% { opacity: 0; }
 }
 
-@keyframes burn-fan {
+@keyframes burn-place {
+  0% {
+    opacity: 0;
+    transform: translate(var(--burn-in-x, 46px), var(--burn-in-y, -30px)) rotate(var(--burn-tilt)) scale(.72);
+  }
+  62% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(calc(var(--burn-tilt) * .28)) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+}
+
+/* Every card collapses onto the grid's first cell: one packet, one exit. */
+@keyframes burn-gather {
   from {
     opacity: 1;
-    transform: translateX(0) rotate(0deg);
+    transform: translate(0, 0) rotate(0deg) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateX(calc(var(--burn-index) * 8px)) rotate(var(--burn-rot));
+    transform: translate(calc(var(--burn-cell-x) * -1), calc(var(--burn-cell-y) * -1)) rotate(var(--burn-tilt)) scale(.9);
   }
+}
+
+@keyframes burn-scrim-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes count-tick-up { 0% { transform: translateY(-6px) scale(1.07); color: var(--tick-color); } 100% { transform: translateY(0) scale(1); } }
@@ -158,7 +184,10 @@
     --dur-deal: 1ms;  --dur-flip: 1ms;  --dur-third: 1ms;
     --dur-chip: 1ms;  --dur-sweep: 1ms; --dur-pay: 1ms;
     --dur-dragon: 1ms; --dur-panda: 1ms;
-    --dur-burn-expose: 1ms; --dur-burn-hold: 1200ms; --dur-burn-fan: 1ms;
+    --dur-burn-expose: 1ms; --dur-burn-hold: 1200ms;
+    --dur-burn-place: 1ms; --dur-burn-stagger: 0ms;
+    /* A static pause, no animation attached: the grid must stay readable. */
+    --dur-burn-grid-hold: 900ms; --dur-burn-gather: 1ms;
     --dur-banner-in: 200ms; --dur-banner-out: 200ms; --dur-panel: 1ms;
     --dur-count-tick: 1ms; --dur-signal-out: 1ms; --dur-signal-in: 1ms; --dur-trace-row: 1ms; --dur-reveal: 1ms;
   }

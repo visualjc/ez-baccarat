@@ -861,13 +861,50 @@ button:focus-visible {
   animation-delay: var(--delay);
 }
 
+/* A zero-size anchor: 25% across the felt, vertically centred. Children hang
+   off it by half their own token-derived size, so nothing is a magic pixel. */
 .burn-stage {
   position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: grid;
-  place-items: center;
+  left: var(--burn-anchor-x);
+  top: 50%;
+  width: 0;
+  height: 0;
+}
+
+.burn-scrim {
+  position: absolute;
+  inset: 22px;
+  border-radius: calc(var(--rail-radius) - 10px);
+  background: radial-gradient(
+    ellipse 70% 60% at var(--burn-anchor-x) 50%,
+    rgba(4, 18, 13, .32),
+    rgba(4, 18, 13, .72)
+  );
+  opacity: 0;
+  animation: burn-scrim-in var(--anim-burn-expose) var(--ease-emph) forwards;
+}
+
+.burn-scrim.is-gathering {
+  animation: burn-scrim-in var(--anim-burn-gather) var(--ease-exit) reverse forwards;
+}
+
+.burn-card-slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  margin-left: calc(var(--card-w) / -2);
+  margin-top: calc(var(--card-h) / -2);
+  transform: scale(var(--burn-scale));
+}
+
+.burn-stage.is-gathering .burn-card-slot {
+  opacity: 0;
+  transform: scale(calc(var(--burn-scale) * .94));
+  transition:
+    opacity var(--anim-burn-gather) var(--ease-exit),
+    transform var(--anim-burn-gather) var(--ease-exit);
 }
 
 .burn-card.from-shoe {
@@ -879,11 +916,12 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+/* Flush with the card's left edge and growing right into empty felt: centring
+   a nowrap pill on a 25% anchor clips it off the left edge at narrow widths. */
 .burn-callout {
   position: absolute;
-  top: calc(14px + var(--card-h) + 18px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: calc(var(--card-h) * var(--burn-scale) / 2 + 16px);
+  left: calc(var(--card-w) * var(--burn-scale) / -2);
   margin: 0;
   padding: 6px 12px;
   border-radius: 999px;
@@ -896,27 +934,40 @@ button:focus-visible {
   white-space: nowrap;
 }
 
-.burn-fan {
+/* Left-anchored beside the main card, its midline on the card's midline. */
+.burn-grid {
+  --burn-mini-w: calc(var(--card-w) * var(--burn-mini-scale));
+  --burn-mini-h: calc(var(--card-h) * var(--burn-mini-scale));
   position: absolute;
-  top: 30px;
-  left: 50%;
-  width: 180px;
-  height: 72px;
-  transform: translateX(-50%);
+  left: calc(var(--card-w) * var(--burn-scale) / 2 + var(--burn-lane-gap));
+  top: 0;
+  width: calc(var(--burn-cols) * (var(--burn-mini-w) + var(--burn-cell-gap)) - var(--burn-cell-gap));
+  height: calc(var(--burn-rows) * (var(--burn-mini-h) + var(--burn-cell-gap)) - var(--burn-cell-gap));
+  transform: translateY(-50%);
 }
 
-.burn-fan-card {
+.burn-grid-card {
+  --burn-cell-x: calc(var(--burn-col) * (var(--burn-mini-w) + var(--burn-cell-gap)));
+  --burn-cell-y: calc(var(--burn-row) * (var(--burn-mini-h) + var(--burn-cell-gap)));
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 58px;
-  border-radius: 8px;
+  left: var(--burn-cell-x);
+  top: var(--burn-cell-y);
+  width: var(--burn-mini-w);
+  height: var(--burn-mini-h);
+  border-radius: var(--card-radius);
   background:
     repeating-linear-gradient(45deg, transparent 0 6px, rgba(212, 175, 87, .35) 6px 7px),
     linear-gradient(135deg, var(--card-back) 0%, var(--card-back-deep) 100%);
   border: 1px solid var(--card-back-rim);
-  animation: burn-fan var(--anim-burn-fan) var(--ease-exit) forwards;
+  box-shadow: var(--shadow-card);
+  animation: burn-place var(--anim-burn-place) var(--ease-deal) backwards;
+  animation-delay: calc(var(--burn-cell) * var(--anim-burn-stagger));
+}
+
+/* Reverse stagger: the last card placed is the first one gathered back up. */
+.burn-stage.is-gathering .burn-grid-card {
+  animation: burn-gather var(--anim-burn-gather) var(--ease-exit) forwards;
+  animation-delay: calc((var(--burn-count) - 1 - var(--burn-cell)) * var(--anim-burn-stagger) * .5);
 }
 
 @media (max-width: 1239px) {

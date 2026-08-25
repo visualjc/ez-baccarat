@@ -152,7 +152,7 @@ export function mountTableView(host: HTMLElement, deps: TableViewDeps): TableVie
   bannerLayer.id = "banner-layer";
 
   const celebration = mountCelebration(celebrationLayer);
-  const burnRitual = mountBurnRitual(burnLayer, shoe.burnReadoutElement, deps.announce);
+  const burnRitual = mountBurnRitual(burnLayer, deps.announce);
   const outcomeBanner = mountOutcomeBanner(bannerLayer);
 
   rowTray.append(bankrollHost, chipHost, actionHost);
