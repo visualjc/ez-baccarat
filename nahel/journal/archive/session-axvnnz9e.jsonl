@@ -1,0 +1,2 @@
+{"id":"s3h7szg7","ts":"2026-08-25T03:48:43Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"fc5v6szj","payload":{"target":"item","record":{"id":"fc5v6szj","name":"engine-counts","type":"feature","status":"in-review","lane":"direct","parent":"dh6xeqdg","depends_on":["9x1w62ms"],"external_refs":[],"playbook":"build-review","created":"2026-08-25T02:50:49Z","updated":"2026-08-25T03:48:43Z"},"body":""}}
+{"id":"ar69vwjm","ts":"2026-08-25T03:48:43Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

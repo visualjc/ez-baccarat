@@ -1,0 +1,92 @@
+:root {
+  --dur-deal: 380ms;  --dur-flip: 300ms;  --dur-third: 520ms;
+  --dur-chip: 260ms;  --dur-sweep: 520ms; --dur-pay: 420ms;
+  --dur-dragon: 1200ms; --dur-panda: 1100ms;
+  --dur-burn-expose: 500ms; --dur-burn-hold: 1200ms; --dur-burn-fan: 900ms;
+  --dur-banner-in: 320ms; --dur-banner-out: 240ms; --dur-panel: 280ms;
+  --ease-deal:  cubic-bezier(.22,.61,.36,1);
+  --ease-flip:  cubic-bezier(.45,.05,.55,.95);
+  --ease-pop:   cubic-bezier(.34,1.56,.64,1);
+  --ease-exit:  cubic-bezier(.4,0,1,1);
+  --ease-emph:  cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes shoe-shake {
+  0% { transform: translateX(0); }
+  20% { transform: translate(-5px, -1px); }
+  40% { transform: translate(4px, 0); }
+  60% { transform: translate(-3px, 0); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes total-tick {
+  0% { transform: translateY(-3px); color: var(--gold-hi); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes banner-in {
+  from { opacity: 0; transform: translateY(18px) scale(.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes banner-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-10px) scale(.98); }
+}
+
+@keyframes dragon-particle {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+  }
+}
+
+@keyframes panda-particle {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(.8);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1.1);
+  }
+}
+
+@keyframes dragon-wash {
+  0% { opacity: 0; }
+  50% { opacity: .35; }
+  100% { opacity: 0; }
+}
+
+@keyframes burn-fan {
+  from {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(calc(var(--burn-index) * 8px)) rotate(var(--burn-rot));
+  }
+}
+
+.anim-total-tick {
+  animation: total-tick 300ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-deal: 1ms;  --dur-flip: 1ms;  --dur-third: 1ms;
+    --dur-chip: 1ms;  --dur-sweep: 1ms; --dur-pay: 1ms;
+    --dur-dragon: 1ms; --dur-panda: 1ms;
+    --dur-burn-expose: 1ms; --dur-burn-hold: 1200ms; --dur-burn-fan: 1ms;
+    --dur-banner-in: 200ms; --dur-banner-out: 200ms; --dur-panel: 1ms;
+  }
+
+  #celebration-layer {
+    display: none;
+  }
+}

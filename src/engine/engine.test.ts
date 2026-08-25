@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { Card, RANKS, buildOrderedDeck, valueFromRank } from "./card";
 import { createEngine, dealRound, EngineState } from "./engine";
-import { advanceRoundCountState, createInitialCountState } from "./counts";
+import { advanceRoundCountState } from "./counts";
 import {
   baccaratPoint,
   shouldBankerDraw,
@@ -235,6 +235,38 @@ describe("shoe lifecycle", () => {
 });
 
 describe("counting seam", () => {
+  test("counts the exposed burn and evaluates both signals when the shoe opens", () => {
+    const deck = buildOrderedDeck(1);
+    const nineIndex = deck.findIndex((card) => card.rank === "9");
+    const [nine] = deck.splice(nineIndex, 1);
+    deck.unshift(nine!);
+
+    const state = createEngine({
+      initialCards: deck,
+      decks: 1,
+      cutOffset: 14,
+      shuffle: false,
+    });
+
+    const decksRemaining = 51 / 52;
+    expect(state.countState).toEqual({
+      dragonRunning: 2,
+      pandaRunning: 4,
+      seenCount: 1,
+      decksRemaining,
+    });
+    expect(state.countSignals.dragon).toEqual({
+      running: 2,
+      true: 2 / decksRemaining,
+      signal: false,
+    });
+    expect(state.countSignals.panda).toEqual({
+      running: 4,
+      true: 4 / decksRemaining,
+      signal: false,
+    });
+  });
+
   test("includes opening burn card at the front of first-round count input", () => {
     const state = createEngine({
       initialCards: [
@@ -251,6 +283,7 @@ describe("counting seam", () => {
       cutOffset: 1,
       shuffle: false,
     });
+    const openingCountState = state.countState;
     const result = dealRound(state);
 
     expect(result.seenThisRoundForCounts[0].rank).toBe("A");
@@ -258,7 +291,12 @@ describe("counting seam", () => {
       result.seenThisRound.map((card) => card.rank),
     );
 
-    const counts = advanceRoundCountState(createInitialCountState(), result.seenThisRoundForCounts);
-    expect(counts.state.seenCount).toBe(result.seenThisRoundForCounts.length);
+    const counts = advanceRoundCountState(
+      openingCountState,
+      result.seenThisRound,
+      state.shoe.cards.length,
+    );
+    expect(state.countState).toEqual(counts.state);
+    expect(state.countState.seenCount).toBe(result.seenThisRoundForCounts.length);
   });
 });

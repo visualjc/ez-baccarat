@@ -1,6 +1,12 @@
+import "./styles/tokens.css";
+import "./styles/anim.css";
+import "./styles/app.css";
+
+import { mountGame } from "./ui/game";
+import { fromLocation } from "./ui/seed";
+
 document.title = "EZ Baccarat";
 
-document.body.innerHTML = `
-  <h1>EZ Baccarat</h1>
-  <p>engine under construction</p>
-`;
+mountGame({
+  seed: fromLocation(),
+});

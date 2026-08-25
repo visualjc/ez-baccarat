@@ -1,4 +1,10 @@
 import { Card } from "./card";
+import {
+  advanceRoundCountState,
+  CountPairSignal,
+  CountState,
+  createInitialCountState,
+} from "./counts";
 import { RandomGenerator, createSeededRng } from "./rng";
 import { drawCard, finalizeRound, openShoeWithBurn, Shoe } from "./shoe";
 import { baccaratPoint, shouldBankerDraw, shouldPlayerDraw, settleHand } from "./rules";
@@ -26,6 +32,8 @@ export interface EngineState {
   roundsPlayed: number;
   exposedBurnCard: Card;
   unseenBurnCards: Card[];
+  countState: CountState;
+  countSignals: CountPairSignal;
 }
 
 export function createEngine(options: EngineOptions = {}): EngineState {
@@ -37,12 +45,19 @@ export function createEngine(options: EngineOptions = {}): EngineState {
   };
 
   const opened = openShoeWithBurn(optionsWithRng);
+  const openingCount = advanceRoundCountState(
+    createInitialCountState(opened.shoe.cards.length),
+    [opened.exposedBurnCard],
+    opened.shoe.cards.length,
+  );
 
   return {
     shoe: opened.shoe,
     roundsPlayed: 0,
     exposedBurnCard: opened.exposedBurnCard,
     unseenBurnCards: opened.unseenBurnCards,
+    countState: openingCount.state,
+    countSignals: openingCount.trace.after,
   };
 }
 
@@ -97,9 +112,16 @@ export function dealRound(state: EngineState): RoundResult {
   const seenThisRoundForCounts = state.roundsPlayed === 0
     ? [state.exposedBurnCard, ...seenThisRound]
     : seenThisRound;
+  const roundCount = advanceRoundCountState(
+    state.countState,
+    seenThisRound,
+    state.shoe.cards.length,
+  );
   const cutCardReachedDuringRound = state.shoe.retireAfterCurrentRound;
   finalizeRound(state.shoe);
 
+  state.countState = roundCount.state;
+  state.countSignals = roundCount.trace.after;
   state.roundsPlayed += 1;
 
   return {
