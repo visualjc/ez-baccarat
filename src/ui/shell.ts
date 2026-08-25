@@ -52,12 +52,12 @@ export function mountShell(host: HTMLElement = document.body): ShellHandle {
   newShoeButton.type = "button";
   newShoeButton.className = "header-button";
   newShoeButton.textContent = "New Shoe";
-  newShoeButton.tabIndex = 15;
+  newShoeButton.tabIndex = 16;
 
   const modeToggle = document.createElement("button");
   modeToggle.type = "button";
   modeToggle.className = "mode-toggle";
-  modeToggle.tabIndex = 16;
+  modeToggle.tabIndex = 17;
   modeToggle.setAttribute("aria-label", "Toggle Trainer or Casino mode");
   const trainerText = document.createElement("span");
   trainerText.textContent = "Trainer";
@@ -69,7 +69,7 @@ export function mountShell(host: HTMLElement = document.body): ShellHandle {
   helpButton.type = "button";
   helpButton.className = "header-button help";
   helpButton.textContent = "?";
-  helpButton.tabIndex = 17;
+  helpButton.tabIndex = 18;
 
   headerControls.append(seedChip, newShoeButton, modeToggle, helpButton);
   header.append(wordmark, meterWrap, headerControls);

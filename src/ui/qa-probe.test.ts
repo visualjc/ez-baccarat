@@ -155,6 +155,7 @@ describe("QA keyboard probe", () => {
       fastForward: () => calls.push("fastForward"),
       clear: () => calls.push("clear"),
       rebet: () => calls.push("rebet"),
+      double: () => calls.push("double"),
       newShoe: () => calls.push("newShoe"),
       removeLast: () => calls.push("removeLast"),
       toggleMode: () => calls.push("toggleMode"),
@@ -184,7 +185,7 @@ describe("QA keyboard probe", () => {
         ["1", "chip:1"], ["2", "chip:5"], ["3", "chip:25"],
         ["4", "chip:100"], ["5", "chip:500"], ["6", "chip:1000"],
         ["Space", "deal"], ["Enter", "deal"], ["Backspace", "removeLast"],
-        ["C", "clear"], ["R", "rebet"], ["S", "newShoe"],
+        ["C", "clear"], ["R", "rebet"], ["X", "double"], ["S", "newShoe"],
         ["M", "toggleMode"], ["?", "help"], ["Escape", "dismiss"],
       ] as const;
 

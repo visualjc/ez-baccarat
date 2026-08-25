@@ -40,6 +40,64 @@ export function totalWager(history: BetHistory): number {
     + totalForBet(history, "panda");
 }
 
+export type DoubleSource = "current" | "last" | "none";
+
+export interface DoublePlan {
+  ok: boolean;
+  source: DoubleSource;
+  /** The layout to apply when ok; an empty history otherwise. */
+  history: BetHistory;
+  /** What the doubled layout costs, affordable or not. */
+  total: number;
+  reason?: "no-wagers" | "bankroll";
+}
+
+/** Each spot's chip list concatenated with itself: exact 2x, no re-denomination. */
+export function doubleBetHistory(history: BetHistory): BetHistory {
+  const source = cloneBetHistory(history);
+  return {
+    player: [...source.player, ...source.player],
+    banker: [...source.banker, ...source.banker],
+    tie: [...source.tie, ...source.tie],
+    dragon: [...source.dragon, ...source.dragon],
+    panda: [...source.panda, ...source.panda],
+  };
+}
+
+/**
+ * 2x doubles the live layout. On an empty layout it doubles the last settled
+ * one instead — the round clears the felt before it settles, so an empty
+ * layout is the state a player reaches for 2x from after every round.
+ */
+export function planDoubleWager(
+  bankroll: number,
+  current: BetHistory,
+  last?: BetHistory,
+): DoublePlan {
+  const fromCurrent = totalWager(current) > 0;
+  const previous = last ? cloneBetHistory(last) : undefined;
+  const source: DoubleSource = fromCurrent
+    ? "current"
+    : previous && totalWager(previous) > 0
+      ? "last"
+      : "none";
+
+  if (source === "none") {
+    return { ok: false, source, history: createEmptyBetHistory(), total: 0, reason: "no-wagers" };
+  }
+
+  const doubled = doubleBetHistory(source === "current" ? current : previous!);
+  const total = totalWager(doubled);
+
+  // Refused, never clamped: a partial double would silently change which side
+  // the player is backing, and a button labelled 2x that does not double lies.
+  if (total > bankroll) {
+    return { ok: false, source, history: createEmptyBetHistory(), total, reason: "bankroll" };
+  }
+
+  return { ok: true, source, history: doubled, total };
+}
+
 export function canPlaceChip(bankroll: number, history: BetHistory, amount: number): boolean {
   return amount > 0 && totalWager(history) + amount <= bankroll;
 }
