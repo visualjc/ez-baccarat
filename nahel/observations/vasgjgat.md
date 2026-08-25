@@ -1,0 +1,11 @@
+---
+id: vasgjgat
+name: ezb-pages-deploy
+created: 2026-08-25T20:02:55Z
+tags:
+  - deploy
+  - reference
+sources:
+  - e161k7x7
+---
+EZ Baccarat publishes at https://visualjc.github.io/ez-baccarat/ from the gh-pages branch, built and pushed by scripts/deploy-pages.sh (BASE_PATH=/ez-baccarat/, temporary worktree, refuses to run off main unless DEPLOY_FROM is set). Pages source must stay gh-pages at / (root): pointing it at a source branch serves the unbuilt index.html and 404s on /src/main.ts. Branch deploys need only repo scope, which is why this route was chosen over the Actions workflow still parked at docs/deploy/pages.yml — that one needs a workflow-scoped token (gh auth refresh -h github.com -s workflow -u visualjc, interactive, Jim only). Redeploy after a merge: git checkout main && git pull && scripts/deploy-pages.sh.
