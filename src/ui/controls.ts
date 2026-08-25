@@ -15,16 +15,19 @@ export function mountControls(host: HTMLElement): ControlsHandle {
   clearButton.type = "button";
   clearButton.className = "btn btn-ghost";
   clearButton.textContent = "Clear";
+  clearButton.tabIndex = 12;
 
   const rebetButton = document.createElement("button");
   rebetButton.type = "button";
   rebetButton.className = "btn btn-ghost";
   rebetButton.textContent = "Rebet";
+  rebetButton.tabIndex = 13;
 
   const dealButton = document.createElement("button");
   dealButton.type = "button";
   dealButton.className = "btn btn-primary";
   dealButton.textContent = "DEAL";
+  dealButton.tabIndex = 14;
 
   wrapper.append(clearButton, rebetButton, dealButton);
   host.append(wrapper);

@@ -9,6 +9,68 @@
   --ease-pop:   cubic-bezier(.34,1.56,.64,1);
   --ease-exit:  cubic-bezier(.4,0,1,1);
   --ease-emph:  cubic-bezier(.16,1,.3,1);
+  --speed-scale: 1;
+  --anim-deal: calc(var(--dur-deal) * var(--speed-scale));
+  --anim-flip: calc(var(--dur-flip) * var(--speed-scale));
+  --anim-third: calc(var(--dur-third) * var(--speed-scale));
+  --anim-chip: calc(var(--dur-chip) * var(--speed-scale));
+  --anim-sweep: calc(var(--dur-sweep) * var(--speed-scale));
+  --anim-pay: calc(var(--dur-pay) * var(--speed-scale));
+  --anim-dragon: calc(var(--dur-dragon) * var(--speed-scale));
+  --anim-panda: calc(var(--dur-panda) * var(--speed-scale));
+  --anim-shoe: calc(420ms * var(--speed-scale));
+  --anim-burn-expose: calc(var(--dur-burn-expose) * var(--speed-scale));
+  --anim-burn-fan: calc(var(--dur-burn-fan) * var(--speed-scale));
+  --anim-banner-in: calc(var(--dur-banner-in) * var(--speed-scale));
+  --anim-banner-out: calc(var(--dur-banner-out) * var(--speed-scale));
+  --anim-total: calc(300ms * var(--speed-scale));
+}
+
+/* The timeline also resolves its active wait when this is applied. */
+.speed-fast { --speed-scale: .025; }
+
+@keyframes deal-slide {
+  0% { opacity: .98; box-shadow: none; transform: translate(var(--deal-x), var(--deal-y)) rotate(-8deg) scale(.86); }
+  76% { opacity: 1; box-shadow: var(--shadow-card); transform: translateY(-4px) rotate(0deg) scale(1); }
+  100% { opacity: 1; box-shadow: var(--shadow-card); transform: translate(0) rotate(0deg) scale(1); }
+}
+
+@keyframes third-card-emphasis {
+  0% { outline-color: transparent; transform: rotate(90deg) translate(6px, -4px) scale(1); }
+  25%, 67% { outline-color: var(--gold); transform: rotate(90deg) translate(6px, -4px) scale(1.12); }
+  100% { outline-color: var(--gold); transform: rotate(90deg) translate(6px, -4px) scale(1); }
+}
+
+@keyframes chip-place {
+  0% { opacity: .2; transform: translate(var(--chip-from-x, 0), var(--chip-from-y, 32px)) rotate(-14deg) scale(.82); }
+  70% { opacity: 1; transform: translateY(calc(var(--stack-index) * -6px)) rotate(0deg) scale(1.08); }
+  100% { opacity: 1; transform: translateY(calc(var(--stack-index) * -6px)) rotate(0deg) scale(1); }
+}
+
+@keyframes chip-lift {
+  to { opacity: 0; transform: translateY(-28px) rotate(14deg) scale(.82); }
+}
+
+@keyframes win-sweep {
+  0% { opacity: 1; transform: translateY(calc(var(--stack-index) * -6px)) rotate(0deg); }
+  60% { opacity: 1; transform: translate(0, -56px) rotate(6deg); }
+  100% { opacity: 0; transform: translate(0, -72px) rotate(6deg); }
+}
+
+@keyframes win-payout {
+  0% { opacity: 0; transform: translate(-72px, -48px) rotate(-12deg) scale(.8); }
+  55% { opacity: 1; transform: translate(0, calc(var(--stack-index) * -6px)) rotate(0deg) scale(1.08); }
+  100% { opacity: 1; transform: translateY(calc(var(--stack-index) * -6px)) scale(1); }
+}
+
+@keyframes burn-expose {
+  from { opacity: .2; transform: translate(var(--burn-from-x, 110px), var(--burn-from-y, 18px)) rotate(-8deg) scale(.86); }
+  to { opacity: 1; transform: translateY(-8px) rotate(0deg) scale(1.25); }
+}
+
+@keyframes push-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--push); }
+  50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--push) 45%, transparent); }
 }
 
 @keyframes shoe-shake {
@@ -74,7 +136,7 @@
 }
 
 .anim-total-tick {
-  animation: total-tick 300ms linear;
+  animation: total-tick var(--anim-total) linear;
 }
 
 @media (prefers-reduced-motion: reduce) {

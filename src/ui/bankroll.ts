@@ -1,5 +1,6 @@
 import { formatCurrency } from "./types";
 import { applyBankrollDelta, DEFAULT_BANKROLL } from "./state";
+import { readStoredItem } from "./storage";
 
 export interface BankrollHandle {
   element: HTMLElement;
@@ -48,7 +49,7 @@ export function mountBankroll(host: HTMLElement): BankrollHandle {
   wrapper.append(label, value);
   host.append(wrapper);
 
-  const fromStorage = Number.parseInt(window.localStorage.getItem(STORAGE_KEY) ?? "", 10);
+  const fromStorage = Number.parseInt(readStoredItem(STORAGE_KEY) ?? "", 10);
   const safe = Number.isFinite(fromStorage) ? fromStorage : DEFAULT_BANKROLL;
   let bankroll = Math.max(0, safe);
   value.textContent = formatCurrency(bankroll);

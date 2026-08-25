@@ -47,12 +47,23 @@ export function mountShoe(host: HTMLElement): ShoeHandle {
     async shake() {
       shoe.classList.add("is-shaking");
       await new Promise<void>((resolve) => {
+        let fallback: number | undefined;
         const off = () => {
           shoe.removeEventListener("animationend", off);
+          if (fallback !== undefined) {
+            window.clearTimeout(fallback);
+          }
           shoe.classList.remove("is-shaking");
           resolve();
         };
         shoe.addEventListener("animationend", off);
+        const duration = getComputedStyle(shoe).animationDuration;
+        const durationMs = duration.endsWith("ms")
+          ? Number.parseFloat(duration)
+          : Number.parseFloat(duration) * 1000;
+        // `animationend` is not guaranteed in backgrounded tabs or when a
+        // browser suppresses a very short fast-forwarded animation.
+        fallback = window.setTimeout(off, Math.max(1, durationMs) + 50);
       });
     },
     setRemaining(remaining, total) {

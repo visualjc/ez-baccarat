@@ -1,4 +1,5 @@
 import { CHIP_DENOMS } from "./types";
+import { readStoredItem } from "./storage";
 
 export interface ChipTrayHandle {
   element: HTMLElement;
@@ -19,13 +20,13 @@ export function mountChipTray(host: HTMLElement): ChipTrayHandle {
   const chips: HTMLButtonElement[] = [];
   let selectedValue: typeof CHIP_DENOMS[number] = CHIP_DENOMS[0];
 
-  const persisted = window.localStorage.getItem(STORAGE_KEY);
+  const persisted = readStoredItem(STORAGE_KEY);
   const numeric = persisted ? Number.parseInt(persisted, 10) : Number.NaN;
   if (!Number.isNaN(numeric) && CHIP_DENOMS.includes(numeric as typeof CHIP_DENOMS[number])) {
     selectedValue = numeric as typeof CHIP_DENOMS[number];
   }
 
-  for (const value of CHIP_DENOMS) {
+  for (const [index, value] of CHIP_DENOMS.entries()) {
     const chip = document.createElement("button");
     chip.type = "button";
     chip.className = `chip chip-value-${value}`;
@@ -33,6 +34,7 @@ export function mountChipTray(host: HTMLElement): ChipTrayHandle {
     chip.setAttribute("role", "radio");
     chip.setAttribute("aria-label", `${value} chip`);
     chip.textContent = `${value}`;
+    chip.tabIndex = index + 1;
     chip.addEventListener("click", () => {
       select(value);
     });

@@ -5,6 +5,8 @@ export interface OutcomeBannerHandle {
   element: HTMLElement;
   show(settlement: Settlement, net: number): Promise<void>;
   hide(): void;
+  fastForward(): void;
+  resetPlayback(): void;
   isVisible(): boolean;
 }
 
@@ -61,6 +63,22 @@ export function mountOutcomeBanner(host: HTMLElement): OutcomeBannerHandle {
   host.append(banner);
 
   let autoHideTimer: number | undefined;
+  let activeTimer: number | undefined;
+  let activeResolve: (() => void) | undefined;
+  let fastForwarded = false;
+
+  const wait = (ms: number) => new Promise<void>((resolve) => {
+    if (fastForwarded) {
+      resolve();
+      return;
+    }
+    activeResolve = resolve;
+    activeTimer = window.setTimeout(() => {
+      activeTimer = undefined;
+      activeResolve = undefined;
+      resolve();
+    }, ms);
+  });
 
   return {
     element: banner,
@@ -81,7 +99,7 @@ export function mountOutcomeBanner(host: HTMLElement): OutcomeBannerHandle {
         this.hide();
       }, 2600);
 
-      await new Promise<void>((resolve) => window.setTimeout(resolve, parseDuration("--dur-banner-in")));
+      await wait(parseDuration("--dur-banner-in"));
     },
     hide() {
       if (!banner.classList.contains("is-visible")) {
@@ -92,6 +110,19 @@ export function mountOutcomeBanner(host: HTMLElement): OutcomeBannerHandle {
         banner.classList.remove("is-visible", "is-hiding");
         banner.dataset.state = "";
       }, parseDuration("--dur-banner-out"));
+    },
+    fastForward() {
+      fastForwarded = true;
+      if (activeTimer !== undefined) {
+        window.clearTimeout(activeTimer);
+        activeTimer = undefined;
+      }
+      const resolve = activeResolve;
+      activeResolve = undefined;
+      resolve?.();
+    },
+    resetPlayback() {
+      fastForwarded = false;
     },
     isVisible() {
       return banner.classList.contains("is-visible");

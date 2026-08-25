@@ -2,26 +2,11 @@ import type { Card } from "../engine/card";
 
 export interface CardHandle {
   element: HTMLDivElement;
-  flip(durationOverrideMs?: number): Promise<void>;
+  flip(): void;
   setRotated(): void;
 }
 
 const SUITS = ["♠", "♥", "♦", "♣"] as const;
-
-function parseDurationFromCss(value: string): number {
-  const clean = value.trim();
-  if (!clean) {
-    return 300;
-  }
-  if (clean.endsWith("ms")) {
-    return Number.parseFloat(clean);
-  }
-  if (clean.endsWith("s")) {
-    return Number.parseFloat(clean) * 1000;
-  }
-  const parsed = Number.parseFloat(clean);
-  return Number.isFinite(parsed) ? parsed : 300;
-}
 
 export function createCard(card: Card): CardHandle {
   const rank = card.rank;
@@ -68,14 +53,11 @@ export function createCard(card: Card): CardHandle {
 
   return {
     element: root,
-    async flip(durationOverrideMs) {
+    flip() {
       if (root.classList.contains("is-flipped")) {
         return;
       }
-      const duration = durationOverrideMs
-        ?? parseDurationFromCss(getComputedStyle(document.documentElement).getPropertyValue("--dur-flip"));
       root.classList.add("is-flipped");
-      await new Promise<void>((resolve) => window.setTimeout(resolve, duration));
     },
     setRotated() {
       root.classList.add("is-third");

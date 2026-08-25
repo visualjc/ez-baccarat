@@ -60,52 +60,35 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
-function total(cards: Card[]): number {
-  return cards.reduce((sum, card) => sum + card.value, 0) % 10;
-}
-
-function thirdCardRule(result: RoundResult, seat: "player" | "banker"): string | undefined {
-  if (seat === "player" && result.playerCards.length === 3) {
-    return `Player ${total(result.playerCards.slice(0, 2))} draws on 0-5`;
-  }
-
-  if (seat === "banker" && result.bankerCards.length === 3) {
-    const bankerInitial = total(result.bankerCards.slice(0, 2));
-    if (result.playerCards.length === 3) {
-      return `Banker ${bankerInitial} draws vs Player third ${result.playerCards[2].value % 10}`;
-    }
-    return `Banker ${bankerInitial} draws with Player standing`;
-  }
-
-  return undefined;
-}
-
-function buildTimeline(result: RoundResult): TimelineStep[] {
+export function buildTimeline(result: RoundResult): TimelineStep[] {
+  const current = { player: 0, banker: 0 };
+  const makeStep = (seat: "player" | "banker", index: number, isThird: boolean, ruleText?: string): TimelineStep => {
+    current[seat] = seat === "player"
+      ? result.presentation.playerRunningTotals[index]!
+      : result.presentation.bankerRunningTotals[index]!;
+    return {
+      seat,
+      card: (seat === "player" ? result.playerCards : result.bankerCards)[index]!,
+      index,
+      isThird,
+      ruleText,
+      playerTotal: current.player,
+      bankerTotal: current.banker,
+    };
+  };
   const ordered: TimelineStep[] = [
-    { seat: "player", card: result.playerCards[0], index: 0, isThird: false },
-    { seat: "banker", card: result.bankerCards[0], index: 0, isThird: false },
-    { seat: "player", card: result.playerCards[1], index: 1, isThird: false },
-    { seat: "banker", card: result.bankerCards[1], index: 1, isThird: false },
+    makeStep("player", 0, false),
+    makeStep("banker", 0, false),
+    makeStep("player", 1, false),
+    makeStep("banker", 1, false),
   ];
 
   if (result.playerCards[2]) {
-    ordered.push({
-      seat: "player",
-      card: result.playerCards[2],
-      index: 2,
-      isThird: true,
-      ruleText: thirdCardRule(result, "player"),
-    });
+    ordered.push(makeStep("player", 2, true, result.presentation.playerThirdNarration));
   }
 
   if (result.bankerCards[2]) {
-    ordered.push({
-      seat: "banker",
-      card: result.bankerCards[2],
-      index: 2,
-      isThird: true,
-      ruleText: thirdCardRule(result, "banker"),
-    });
+    ordered.push(makeStep("banker", 2, true, result.presentation.bankerThirdNarration));
   }
 
   return ordered;
@@ -176,6 +159,28 @@ export function mountTableView(host: HTMLElement, deps: TableViewDeps): TableVie
   host.replaceChildren(wrapper);
 
   let busy = false;
+  let payoutTimer: number | undefined;
+  let payoutResolve: (() => void) | undefined;
+  let fastForwarding = false;
+
+  const waitForPayout = (ms: number) => new Promise<void>((resolve) => {
+    payoutResolve = resolve;
+    payoutTimer = window.setTimeout(() => {
+      payoutTimer = undefined;
+      payoutResolve = undefined;
+      resolve();
+    }, fastForwarding ? 1 : ms);
+  });
+
+  const resolvePayoutWait = () => {
+    if (payoutTimer !== undefined) {
+      window.clearTimeout(payoutTimer);
+      payoutTimer = undefined;
+    }
+    const resolve = payoutResolve;
+    payoutResolve = undefined;
+    resolve?.();
+  };
 
   const timeline = mountRoundTimeline({
     tableElement: wrapper,
@@ -217,29 +222,35 @@ export function mountTableView(host: HTMLElement, deps: TableViewDeps): TableVie
     burnRitual,
     async playRound(result, wagers) {
       busy = true;
-      const steps = buildTimeline(result);
-      await timeline.play(steps);
+      fastForwarding = false;
+      outcomeBanner.resetPlayback();
+      try {
+        const steps = buildTimeline(result);
+        await timeline.play(steps);
 
-      const multipliers = computeBetMultipliers(wagers, result.settlement);
-      const net = settlementNet(wagers, result.settlement);
+        const multipliers = computeBetMultipliers(wagers, result.settlement);
+        const net = settlementNet(wagers, result.settlement);
 
-      await outcomeBanner.show(result.settlement, net);
-      betLayout.settle(multipliers);
+        await outcomeBanner.show(result.settlement, net);
+        betLayout.settle(multipliers);
 
-      if (result.settlement.isDragon) {
-        celebration.dragon(bankerHand.element.getBoundingClientRect());
+        if (result.settlement.isDragon) {
+          celebration.dragon(bankerHand.element.getBoundingClientRect());
+        }
+        if (result.settlement.isPanda) {
+          celebration.panda(playerHand.element.getBoundingClientRect());
+        }
+
+        await waitForPayout(parseDuration("--dur-pay") + 180);
+        betLayout.clearAll();
+        betLayout.clearSettlement();
+        deps.onWagersChanged?.();
+        return { net, multipliers };
+      } finally {
+        busy = false;
+        fastForwarding = false;
+        wrapper.classList.remove("speed-fast");
       }
-      if (result.settlement.isPanda) {
-        celebration.panda(playerHand.element.getBoundingClientRect());
-      }
-
-      await wait(parseDuration("--dur-pay") + 180);
-      betLayout.clearAll();
-      betLayout.clearSettlement();
-      deps.onWagersChanged?.();
-      busy = false;
-
-      return { net, multipliers };
     },
     async showBurn(exposedCard, burnCount) {
       busy = true;
@@ -261,7 +272,10 @@ export function mountTableView(host: HTMLElement, deps: TableViewDeps): TableVie
       roundNumber.textContent = `#${round}`;
     },
     fastForward() {
+      fastForwarding = true;
       timeline.fastForward();
+      outcomeBanner.fastForward();
+      resolvePayoutWait();
     },
     isBusy() {
       return busy || timeline.isBusy();

@@ -183,6 +183,21 @@ describe("settlement", () => {
 });
 
 describe("engine replay", () => {
+  test("exposes engine-owned totals and tableau narration for the table UI", () => {
+    const state = createEngine({
+      initialCards: makeCardsFromRanks(["A", "A", "2", "2", "2", "2", "4", "3"]),
+      decks: 1,
+      cutOffset: 1,
+      shuffle: false,
+    });
+    const result = dealRound(state);
+
+    expect(result.presentation.playerRunningTotals).toEqual([2, 4, 8]);
+    expect(result.presentation.bankerRunningTotals).toEqual([2, 4, 7]);
+    expect(result.presentation.playerThirdNarration).toBe("Player 4 draws on 0-5");
+    expect(result.presentation.bankerThirdNarration).toBe("Banker 4 draws vs Player third 4");
+  });
+
   test("replays deterministically with seeded mode", () => {
     const options = { seed: 99, decks: 2, cutOffset: 14 };
     const engineA = createEngine(options);

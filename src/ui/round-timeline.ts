@@ -3,12 +3,21 @@ import type { HandZoneHandle } from "./hand-zone";
 
 type Seat = "player" | "banker";
 
+export const FAST_SPEED_SCALE = 0.025;
+
+export interface TimelineTimers {
+  setTimeout(callback: () => void, delay: number): number;
+  clearTimeout(timeout: number): void;
+}
+
 export interface TimelineStep {
   seat: Seat;
   card: Card;
   index: number;
   isThird: boolean;
   ruleText?: string;
+  playerTotal: number;
+  bankerTotal: number;
 }
 
 export interface RoundTimelineHandle {
@@ -30,6 +39,12 @@ export interface RoundTimelineContext {
   onThird(seat: Seat, text: string): void;
 }
 
+interface TimelineDurations {
+  deal: number;
+  flip: number;
+  third: number;
+}
+
 function parseDuration(value: string): number {
   const trimmed = value.trim();
   if (trimmed.endsWith("ms")) {
@@ -42,34 +57,37 @@ function parseDuration(value: string): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function nextFrame(): Promise<void> {
-  return new Promise((resolve) => window.requestAnimationFrame(() => resolve()));
+export function scaleDuration(value: number, speedScale: number): number {
+  return Math.max(1, Math.round(value * speedScale));
 }
 
-export function mountRoundTimeline(context: RoundTimelineContext): RoundTimelineHandle {
-  let busy = false;
+export function timelineWaitSchedule(steps: TimelineStep[], durations: TimelineDurations): number[] {
+  return steps.flatMap((step, index) => [
+    ...(index > 0 ? [140] : []),
+    durations.deal * 0.7,
+    durations.flip,
+    step.isThird ? durations.third : durations.deal * 0.3,
+  ]);
+}
+
+export async function playTimelineWaitSchedule(
+  schedule: number[],
+  wait: (duration: number) => Promise<void>,
+): Promise<void> {
+  for (const duration of schedule) {
+    await wait(duration);
+  }
+}
+
+export function createTimelineWaiter(timers: TimelineTimers) {
   let speedScale = 1;
+  let fastForwarded = false;
   let activeTimeout: number | undefined;
   let activeResolve: (() => void) | undefined;
 
-  const dealDuration = parseDuration(getComputedStyle(document.documentElement).getPropertyValue("--dur-deal"));
-  const flipDuration = parseDuration(getComputedStyle(document.documentElement).getPropertyValue("--dur-flip"));
-  const thirdDuration = parseDuration(getComputedStyle(document.documentElement).getPropertyValue("--dur-third"));
-
-  const scaled = (value: number) => Math.max(1, Math.round(value * speedScale));
-
-  const wait = (ms: number) => new Promise<void>((resolve) => {
-    activeResolve = resolve;
-    activeTimeout = window.setTimeout(() => {
-      activeTimeout = undefined;
-      activeResolve = undefined;
-      resolve();
-    }, scaled(ms));
-  });
-
   const clearPendingWait = () => {
     if (activeTimeout !== undefined) {
-      window.clearTimeout(activeTimeout);
+      timers.clearTimeout(activeTimeout);
       activeTimeout = undefined;
     }
     if (activeResolve) {
@@ -79,38 +97,90 @@ export function mountRoundTimeline(context: RoundTimelineContext): RoundTimeline
     }
   };
 
-  const handTotal = (cards: Card[]) => cards.reduce((sum, card) => sum + card.value, 0) % 10;
-
-  const updateTotals = (steps: TimelineStep[], count: number) => {
-    const played = steps.slice(0, count);
-    const playerCards = played.filter((step) => step.seat === "player").map((step) => step.card);
-    const bankerCards = played.filter((step) => step.seat === "banker").map((step) => step.card);
-    context.onTotals(handTotal(playerCards), handTotal(bankerCards));
+  return {
+    wait(duration: number) {
+      if (fastForwarded) {
+        return Promise.resolve();
+      }
+      return new Promise<void>((resolve) => {
+        activeResolve = resolve;
+        activeTimeout = timers.setTimeout(() => {
+          activeTimeout = undefined;
+          activeResolve = undefined;
+          resolve();
+        }, scaleDuration(duration, speedScale));
+      });
+    },
+    fastForward() {
+      fastForwarded = true;
+      speedScale = FAST_SPEED_SCALE;
+      clearPendingWait();
+    },
+    reset() {
+      fastForwarded = false;
+      speedScale = 1;
+    },
+    clearPendingWait,
   };
+}
+
+function nextFrame(): { promise: Promise<void>; resolve: () => void } {
+  let settled = false;
+  let frame = 0;
+  let fallback = 0;
+  let finish!: () => void;
+
+  const promise = new Promise<void>((resolve) => {
+    finish = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(fallback);
+      resolve();
+    };
+    frame = window.requestAnimationFrame(finish);
+    // A backgrounded tab may defer animation frames indefinitely. The card
+    // still has its initial DOM state, so this is safe to continue without one.
+    fallback = window.setTimeout(finish, 50);
+  });
+
+  return { promise, resolve: finish };
+}
+
+export function mountRoundTimeline(context: RoundTimelineContext): RoundTimelineHandle {
+  let busy = false;
+  let resolvePendingFrame: (() => void) | undefined;
+
+  const dealDuration = parseDuration(getComputedStyle(document.documentElement).getPropertyValue("--dur-deal"));
+  const flipDuration = parseDuration(getComputedStyle(document.documentElement).getPropertyValue("--dur-flip"));
+  const thirdDuration = parseDuration(getComputedStyle(document.documentElement).getPropertyValue("--dur-third"));
+  const waiter = createTimelineWaiter({
+    setTimeout: (callback, delay) => window.setTimeout(callback, delay),
+    clearTimeout: (timeout) => window.clearTimeout(timeout),
+  });
+  const wait = waiter.wait;
 
   const animateCard = async (step: TimelineStep, handle: ReturnType<HandZoneHandle["addCard"]>) => {
     const card = handle.element;
-    await nextFrame();
+    const frame = nextFrame();
+    resolvePendingFrame = frame.resolve;
+    await frame.promise;
+    resolvePendingFrame = undefined;
 
     const origin = context.originRect();
     const target = card.getBoundingClientRect();
     const dx = origin.left + origin.width / 2 - (target.left + target.width / 2);
     const dy = origin.top + origin.height / 2 - (target.top + target.height / 2);
 
-    card.style.transition = "none";
-    card.style.transform = `translate(${dx}px, ${dy}px) rotate(-8deg) scale(.86)`;
-    card.style.opacity = "0.98";
-    card.style.boxShadow = "none";
-
-    void card.offsetWidth;
-
-    card.style.transition = `transform ${scaled(dealDuration)}ms var(--ease-deal), box-shadow ${scaled(dealDuration)}ms var(--ease-deal), opacity ${scaled(dealDuration)}ms var(--ease-deal)`;
-    card.style.transform = "translate(0, 0) rotate(0deg) scale(1)";
-    card.style.opacity = "1";
-    card.style.boxShadow = "var(--shadow-card)";
+    card.style.setProperty("--deal-x", `${dx}px`);
+    card.style.setProperty("--deal-y", `${dy}px`);
+    card.classList.add("is-dealing");
 
     await wait(dealDuration * 0.7);
-    await handle.flip(scaled(flipDuration));
+    handle.flip();
+    await wait(flipDuration);
     context.onCardSeen(step.seat, step.card, step.index, step.isThird);
 
     if (step.isThird) {
@@ -120,10 +190,10 @@ export function mountRoundTimeline(context: RoundTimelineContext): RoundTimeline
       }
     }
 
-    await wait(step.isThird ? thirdDuration * 0.4 : dealDuration * 0.3);
-    card.style.transition = "";
-    card.style.transform = "";
-    card.style.opacity = "";
+    await wait(step.isThird ? thirdDuration : dealDuration * 0.3);
+    card.classList.remove("is-dealing");
+    card.style.removeProperty("--deal-x");
+    card.style.removeProperty("--deal-y");
     card.classList.remove("is-third-emphasis");
   };
 
@@ -132,9 +202,9 @@ export function mountRoundTimeline(context: RoundTimelineContext): RoundTimeline
       return busy;
     },
     fastForward() {
-      speedScale = 0.25;
+      waiter.fastForward();
+      resolvePendingFrame?.();
       context.tableElement.classList.add("speed-fast");
-      clearPendingWait();
     },
     async play(steps) {
       if (busy) {
@@ -142,34 +212,38 @@ export function mountRoundTimeline(context: RoundTimelineContext): RoundTimeline
       }
 
       busy = true;
-      speedScale = 1;
+      waiter.reset();
       context.tableElement.classList.remove("speed-fast");
       context.hands.player.clear();
       context.hands.banker.clear();
 
-      for (let index = 0; index < steps.length; index += 1) {
-        if (index > 0) {
-          await wait(140);
-        }
+      try {
+        for (let index = 0; index < steps.length; index += 1) {
+          if (index > 0) {
+            await wait(140);
+          }
 
-        const step = steps[index];
-        const hand = step.seat === "player" ? context.hands.player : context.hands.banker;
-        const handle = hand.addCard(step.card);
-        if (step.isThird) {
-          handle.setRotated();
-        }
+          const step = steps[index];
+          const hand = step.seat === "player" ? context.hands.player : context.hands.banker;
+          const handle = hand.addCard(step.card);
+          if (step.isThird) {
+            handle.setRotated();
+          }
 
-        await animateCard(step, handle);
-        updateTotals(steps, index + 1);
+          await animateCard(step, handle);
+          context.onTotals(step.playerTotal, step.bankerTotal);
+        }
+      } finally {
+        busy = false;
+        resolvePendingFrame = undefined;
+        waiter.reset();
       }
-
-      busy = false;
-      speedScale = 1;
-      context.tableElement.classList.remove("speed-fast");
     },
     destroy() {
       busy = false;
-      clearPendingWait();
+      resolvePendingFrame?.();
+      resolvePendingFrame = undefined;
+      waiter.clearPendingWait();
       context.tableElement.classList.remove("speed-fast");
     },
   };

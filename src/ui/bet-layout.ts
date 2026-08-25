@@ -98,13 +98,14 @@ export function mountBetLayout(host: HTMLElement, options: BetLayoutOptions = {}
     panda: spotHandles.panda?.total() ?? 0,
   });
 
-  for (const config of SPOTS) {
+  for (const [index, config] of SPOTS.entries()) {
     const wrapper = document.createElement("div");
     wrapper.className = "spot-wrap";
     wrapper.style.setProperty("--spot-y", `${config.translateY}px`);
-    wrapper.style.width = config.width;
+    wrapper.style.setProperty("--spot-width", config.width);
 
     const spot = mountBetSpot(wrapper, config);
+    spot.element.tabIndex = index + 7;
     spotHandles[config.kind] = spot;
     container.append(wrapper);
 

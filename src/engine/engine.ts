@@ -25,6 +25,13 @@ export interface RoundResult {
   settlement: ReturnType<typeof settleHand>;
   cutCardReachedDuringRound: boolean;
   shoeRetiredAfterRound: boolean;
+  /** Engine-owned display values; UI must not replay baccarat/tableau math. */
+  presentation: {
+    playerRunningTotals: number[];
+    bankerRunningTotals: number[];
+    playerThirdNarration?: string;
+    bankerThirdNarration?: string;
+  };
 }
 
 export interface EngineState {
@@ -109,6 +116,16 @@ export function dealRound(state: EngineState): RoundResult {
   }
 
   const settlement = settleHand(playerCards, bankerCards);
+  const playerRunningTotals = playerCards.map((_, index) => baccaratPoint(playerCards.slice(0, index + 1)));
+  const bankerRunningTotals = bankerCards.map((_, index) => baccaratPoint(bankerCards.slice(0, index + 1)));
+  const playerThirdNarration = playerCards.length === 3
+    ? `Player ${playerTotal} draws on 0-5`
+    : undefined;
+  const bankerThirdNarration = bankerCards.length === 3
+    ? playerCards.length === 3
+      ? `Banker ${bankerTotal} draws vs Player third ${playerCards[2]!.value % 10}`
+      : `Banker ${bankerTotal} draws with Player standing`
+    : undefined;
   const seenThisRoundForCounts = state.roundsPlayed === 0
     ? [state.exposedBurnCard, ...seenThisRound]
     : seenThisRound;
@@ -132,5 +149,11 @@ export function dealRound(state: EngineState): RoundResult {
     settlement,
     cutCardReachedDuringRound,
     shoeRetiredAfterRound: state.shoe.retired,
+    presentation: {
+      playerRunningTotals,
+      bankerRunningTotals,
+      playerThirdNarration,
+      bankerThirdNarration,
+    },
   };
 }

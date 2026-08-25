@@ -3,6 +3,10 @@ html, body {
   min-height: 100%;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   font-family: "Avenir Next", "Trebuchet MS", sans-serif;
   background: var(--shell-bg);
@@ -289,7 +293,7 @@ button:focus-visible {
 }
 
 .shoe.is-shaking {
-  animation: shoe-shake 420ms var(--ease-pop);
+  animation: shoe-shake var(--anim-shoe) var(--ease-pop);
 }
 
 .burn-readout {
@@ -369,7 +373,7 @@ button:focus-visible {
   font-size: 12px;
   opacity: 0;
   transform: translateY(4px);
-  transition: opacity 140ms ease, transform 140ms ease;
+  transition: opacity calc(140ms * var(--speed-scale)) ease, transform calc(140ms * var(--speed-scale)) ease;
 }
 
 .hand-rule.show {
@@ -411,11 +415,15 @@ button:focus-visible {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  transition: transform var(--dur-flip) var(--ease-flip);
+  transition: transform var(--anim-flip) var(--ease-flip);
 }
 
 .card.is-flipped .card-inner {
   transform: rotateY(180deg);
+}
+
+.card.is-dealing {
+  animation: deal-slide var(--anim-deal) var(--ease-deal) both;
 }
 
 .card-face,
@@ -484,6 +492,7 @@ button:focus-visible {
 .card.is-third-emphasis {
   outline: 3px solid var(--gold);
   outline-offset: 2px;
+  animation: third-card-emphasis var(--anim-third) var(--ease-emph) both;
 }
 
 #row-bets-wrap {
@@ -492,14 +501,19 @@ button:focus-visible {
 }
 
 #row-bets {
-  display: flex;
+  display: grid;
+  grid-template-columns:
+    minmax(112px, 152fr) minmax(132px, 208fr) minmax(120px, 168fr)
+    minmax(132px, 208fr) minmax(112px, 152fr);
   justify-content: center;
   align-items: flex-start;
-  gap: 20px;
+  gap: clamp(8px, 1.5vw, 20px);
 }
 
 .spot-wrap {
   transform: translateY(var(--spot-y));
+  width: 100%;
+  min-width: 0;
 }
 
 .spot {
@@ -516,7 +530,7 @@ button:focus-visible {
   align-items: start;
   gap: 6px 10px;
   cursor: pointer;
-  transition: transform 160ms ease, box-shadow 160ms ease, border-width 160ms ease;
+  transition: transform calc(160ms * var(--speed-scale)) ease, box-shadow calc(160ms * var(--speed-scale)) ease, border-width calc(160ms * var(--speed-scale)) ease;
 }
 
 .spot[data-bet="panda"] {
@@ -644,7 +658,7 @@ button:focus-visible {
   border: 4px dashed transparent;
   position: relative;
   z-index: 1;
-  transition: transform 160ms var(--ease-pop), box-shadow 160ms ease;
+  transition: transform calc(160ms * var(--speed-scale)) var(--ease-pop), box-shadow calc(160ms * var(--speed-scale)) ease;
 }
 
 .chip:first-child {
@@ -688,6 +702,26 @@ button:focus-visible {
   height: 46px;
   margin-left: 0;
   font-size: 12px;
+}
+
+.chip-stack.chip-place {
+  animation: chip-place var(--anim-chip) var(--ease-pop) both;
+}
+
+.chip-stack.chip-lift {
+  animation: chip-lift calc(200ms * var(--speed-scale)) var(--ease-exit) both;
+}
+
+.spot.settled-loss .chip-stack {
+  animation: win-sweep var(--anim-sweep) var(--ease-exit) 200ms both;
+}
+
+.spot.settled-win .chip-stack {
+  animation: win-payout var(--anim-pay) var(--ease-pop) calc(var(--stack-index) * 90ms) both;
+}
+
+.spot.settled-push {
+  animation: push-pulse calc(200ms * var(--speed-scale)) var(--ease-pop) 2;
 }
 
 .actions {
@@ -744,11 +778,11 @@ button:focus-visible {
 
 #outcome-banner.is-visible {
   opacity: 1;
-  animation: banner-in var(--dur-banner-in) var(--ease-pop) both;
+  animation: banner-in var(--anim-banner-in) var(--ease-pop) both;
 }
 
 #outcome-banner.is-hiding {
-  animation: banner-out var(--dur-banner-out) var(--ease-exit) both;
+  animation: banner-out var(--anim-banner-out) var(--ease-exit) both;
 }
 
 .banner-title {
@@ -799,14 +833,14 @@ button:focus-visible {
 .celebration-particle.is-dragon {
   background: radial-gradient(circle at 35% 35%, var(--dragon-flame-1), var(--dragon-flame-2) 65%, var(--dragon-flame-3));
   border-radius: 999px;
-  animation: dragon-particle var(--dur-dragon) var(--ease-exit) forwards;
+  animation: dragon-particle var(--anim-dragon) var(--ease-exit) forwards;
   animation-delay: var(--delay);
 }
 
 .celebration-particle.is-panda {
   background: linear-gradient(135deg, var(--panda-bamboo), var(--panda-bamboo-lo));
   clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  animation: panda-particle var(--dur-panda) var(--ease-pop) forwards;
+  animation: panda-particle var(--anim-panda) var(--ease-pop) forwards;
   animation-delay: var(--delay);
 }
 
@@ -820,7 +854,7 @@ button:focus-visible {
 }
 
 .burn-card.from-shoe {
-  transform: translateY(-8px) scale(1.06);
+  animation: burn-expose var(--anim-burn-expose) var(--ease-deal) both;
 }
 
 .burn-card.focused {
@@ -865,7 +899,7 @@ button:focus-visible {
     repeating-linear-gradient(45deg, transparent 0 6px, rgba(212, 175, 87, .35) 6px 7px),
     linear-gradient(135deg, var(--card-back) 0%, var(--card-back-deep) 100%);
   border: 1px solid var(--card-back-rim);
-  animation: burn-fan var(--dur-burn-fan) var(--ease-exit) forwards;
+  animation: burn-fan var(--anim-burn-fan) var(--ease-exit) forwards;
 }
 
 @media (max-width: 1239px) {
@@ -875,19 +909,6 @@ button:focus-visible {
     --card-h: 108px;
   }
 
-  .spot-wrap:nth-child(2),
-  .spot-wrap:nth-child(4) {
-    width: 180px !important;
-  }
-
-  .spot-wrap:nth-child(1),
-  .spot-wrap:nth-child(5) {
-    width: 132px !important;
-  }
-
-  .spot-wrap:nth-child(3) {
-    width: 148px !important;
-  }
 }
 
 @media (max-width: 859px) {
@@ -916,6 +937,7 @@ button:focus-visible {
   }
 
   #row-bets {
+    grid-template-columns: repeat(5, minmax(112px, 1fr));
     gap: 12px;
     overflow-x: auto;
     justify-content: flex-start;

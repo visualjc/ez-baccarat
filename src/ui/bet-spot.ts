@@ -96,7 +96,7 @@ export function mountBetSpot(host: HTMLElement, meta: BetSpotMeta): BetSpotHandl
     element: button,
     add(amount) {
       const chip = document.createElement("span");
-      chip.className = `chip chip-stack ${chipClassForAmount(amount)}`;
+      chip.className = `chip chip-stack chip-place ${chipClassForAmount(amount)}`;
       chip.textContent = `${amount}`;
       chips.push({ amount, element: chip });
       render();
@@ -106,6 +106,10 @@ export function mountBetSpot(host: HTMLElement, meta: BetSpotMeta): BetSpotHandl
       if (!removed) {
         return undefined;
       }
+      removed.element.classList.remove("chip-place");
+      removed.element.classList.add("chip-lift");
+      button.append(removed.element);
+      window.setTimeout(() => removed.element.remove(), 200);
       render();
       return removed.amount;
     },
