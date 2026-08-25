@@ -207,7 +207,9 @@ button:focus-visible {
   width: 100%;
   display: grid;
   grid-template-rows: 104px minmax(228px, 1fr) 212px 104px;
-  padding: 22px;
+  /* Rail thickness plus the gutter: the felt's rim stops at --rail-w, the UI
+     starts one gutter further in. The felt layers below take --rail-w alone. */
+  padding: calc(var(--rail-w) + var(--felt-gutter));
   border-radius: var(--rail-radius);
   background: linear-gradient(180deg, var(--rail-wood-hi), var(--rail-wood) 45%, var(--rail-wood-lo));
   box-shadow: var(--shadow-table);
@@ -217,8 +219,8 @@ button:focus-visible {
 #table-view::before {
   content: "";
   position: absolute;
-  inset: 22px;
-  border-radius: calc(var(--rail-radius) - 10px);
+  inset: var(--rail-w);
+  border-radius: var(--felt-radius);
   background: radial-gradient(ellipse 120% 90% at 50% 38%, var(--felt-glow) 0%, var(--felt-mid) 38%, var(--felt-base) 68%, var(--felt-deep) 100%);
   box-shadow: inset 0 0 0 2px var(--gold-lo);
   z-index: -2;
@@ -227,8 +229,8 @@ button:focus-visible {
 #table-view::after {
   content: "";
   position: absolute;
-  inset: 22px;
-  border-radius: calc(var(--rail-radius) - 10px);
+  inset: var(--rail-w);
+  border-radius: var(--felt-radius);
   opacity: .05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='3' viewBox='0 0 3 3'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='3' height='3' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   z-index: -1;
@@ -873,8 +875,8 @@ button:focus-visible {
 
 .burn-scrim {
   position: absolute;
-  inset: 22px;
-  border-radius: calc(var(--rail-radius) - 10px);
+  inset: var(--rail-w);
+  border-radius: var(--felt-radius);
   background: radial-gradient(
     ellipse 70% 60% at var(--burn-anchor-x) 50%,
     rgba(4, 18, 13, .32),
@@ -972,6 +974,7 @@ button:focus-visible {
 
 @media (max-width: 1239px) {
   :root {
+    --felt-gutter: 14px;
     --panel-w: 320px;
     --card-w: 76px;
     --card-h: 108px;
@@ -981,6 +984,10 @@ button:focus-visible {
 }
 
 @media (max-width: 859px) {
+  :root {
+    --felt-gutter: 10px;
+  }
+
   #app-main {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;

@@ -85,6 +85,13 @@
   --panel-w:          380px;
   --header-h:         56px;
 
+  /* The wood rail's thickness (the felt's inset) and the breathing room
+     between the felt's gold rim and the nearest UI element are two different
+     ideas; keeping them separate is what gives the table its gutter. */
+  --rail-w:           22px;
+  --felt-radius:      calc(var(--rail-radius) - 10px);
+  --felt-gutter:      20px;
+
   /* Opening burn ritual */
   --burn-anchor-x:    25%;
   --burn-scale:       1.25;
