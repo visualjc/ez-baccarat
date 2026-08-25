@@ -39,11 +39,19 @@ export interface RoundTimelineContext {
   onThird(seat: Seat, text: string): void;
 }
 
-interface TimelineDurations {
+export interface TimelineDurations {
   deal: number;
   flip: number;
   third: number;
 }
+
+export interface RoundUnlockDurations extends TimelineDurations {
+  bannerIn: number;
+  sweep: number;
+  pay: number;
+}
+
+const DEAL_STAGGER = 140;
 
 function parseDuration(value: string): number {
   const trimmed = value.trim();
@@ -62,12 +70,32 @@ export function scaleDuration(value: number, speedScale: number): number {
 }
 
 export function timelineWaitSchedule(steps: TimelineStep[], durations: TimelineDurations): number[] {
-  return steps.flatMap((step, index) => [
-    ...(index > 0 ? [140] : []),
-    durations.deal * 0.7,
-    durations.flip,
-    step.isThird ? durations.third : durations.deal * 0.3,
-  ]);
+  const initialCards = steps.filter((step) => !step.isThird);
+  const thirdCards = steps.filter((step) => step.isThird);
+  const initialDuration = initialCards.length === 0
+    ? 0
+    : (initialCards.length - 1) * DEAL_STAGGER + durations.deal * 0.7 + durations.flip;
+
+  return [
+    ...(initialDuration > 0 ? [initialDuration] : []),
+    ...thirdCards.map(() => durations.third),
+  ];
+}
+
+/**
+ * The blocking path from DEAL to unlocked controls. Banner and settlement
+ * animations overlap with their visual peers, so only the longer settlement
+ * duration belongs on that path.
+ */
+export function roundUnlockWaitSchedule(
+  steps: TimelineStep[],
+  durations: RoundUnlockDurations,
+): number[] {
+  return [
+    ...timelineWaitSchedule(steps, durations),
+    durations.bannerIn,
+    Math.max(durations.sweep, durations.pay),
+  ];
 }
 
 export async function playTimelineWaitSchedule(
@@ -82,19 +110,14 @@ export async function playTimelineWaitSchedule(
 export function createTimelineWaiter(timers: TimelineTimers) {
   let speedScale = 1;
   let fastForwarded = false;
-  let activeTimeout: number | undefined;
-  let activeResolve: (() => void) | undefined;
+  const pending = new Map<number, () => void>();
 
   const clearPendingWait = () => {
-    if (activeTimeout !== undefined) {
-      timers.clearTimeout(activeTimeout);
-      activeTimeout = undefined;
-    }
-    if (activeResolve) {
-      const resolve = activeResolve;
-      activeResolve = undefined;
+    for (const [timeout, resolve] of pending) {
+      timers.clearTimeout(timeout);
       resolve();
     }
+    pending.clear();
   };
 
   return {
@@ -103,12 +126,11 @@ export function createTimelineWaiter(timers: TimelineTimers) {
         return Promise.resolve();
       }
       return new Promise<void>((resolve) => {
-        activeResolve = resolve;
-        activeTimeout = timers.setTimeout(() => {
-          activeTimeout = undefined;
-          activeResolve = undefined;
+        const timeout = timers.setTimeout(() => {
+          pending.delete(timeout);
           resolve();
         }, scaleDuration(duration, speedScale));
+        pending.set(timeout, resolve);
       });
     },
     fastForward() {
@@ -151,7 +173,8 @@ function nextFrame(): { promise: Promise<void>; resolve: () => void } {
 
 export function mountRoundTimeline(context: RoundTimelineContext): RoundTimelineHandle {
   let busy = false;
-  let resolvePendingFrame: (() => void) | undefined;
+  let fastForwarding = false;
+  const pendingFrames = new Set<() => void>();
 
   const dealDuration = parseDuration(getComputedStyle(document.documentElement).getPropertyValue("--dur-deal"));
   const flipDuration = parseDuration(getComputedStyle(document.documentElement).getPropertyValue("--dur-flip"));
@@ -162,12 +185,14 @@ export function mountRoundTimeline(context: RoundTimelineContext): RoundTimeline
   });
   const wait = waiter.wait;
 
-  const animateCard = async (step: TimelineStep, handle: ReturnType<HandZoneHandle["addCard"]>) => {
+  const prepareCard = async (handle: ReturnType<HandZoneHandle["addCard"]>) => {
     const card = handle.element;
-    const frame = nextFrame();
-    resolvePendingFrame = frame.resolve;
-    await frame.promise;
-    resolvePendingFrame = undefined;
+    if (!fastForwarding) {
+      const frame = nextFrame();
+      pendingFrames.add(frame.resolve);
+      await frame.promise;
+      pendingFrames.delete(frame.resolve);
+    }
 
     const origin = context.originRect();
     const target = card.getBoundingClientRect();
@@ -177,24 +202,33 @@ export function mountRoundTimeline(context: RoundTimelineContext): RoundTimeline
     card.style.setProperty("--deal-x", `${dx}px`);
     card.style.setProperty("--deal-y", `${dy}px`);
     card.classList.add("is-dealing");
+    return card;
+  };
 
+  const animateInitialCard = async (step: TimelineStep, handle: ReturnType<HandZoneHandle["addCard"]>) => {
+    const card = await prepareCard(handle);
     await wait(dealDuration * 0.7);
     handle.flip();
     await wait(flipDuration);
     context.onCardSeen(step.seat, step.card, step.index, step.isThird);
-
-    if (step.isThird) {
-      card.classList.add("is-third-emphasis");
-      if (step.ruleText) {
-        context.onThird(step.seat, step.ruleText);
-      }
-    }
-
-    await wait(step.isThird ? thirdDuration : dealDuration * 0.3);
+    context.onTotals(step.playerTotal, step.bankerTotal);
     card.classList.remove("is-dealing");
     card.style.removeProperty("--deal-x");
     card.style.removeProperty("--deal-y");
-    card.classList.remove("is-third-emphasis");
+  };
+
+  const animateThirdCard = async (step: TimelineStep, handle: ReturnType<HandZoneHandle["addCard"]>) => {
+    const card = await prepareCard(handle);
+    handle.flip();
+    card.classList.add("is-third-emphasis");
+    await wait(thirdDuration);
+    context.onCardSeen(step.seat, step.card, step.index, true);
+    if (step.ruleText) {
+      context.onThird(step.seat, step.ruleText);
+    }
+    card.classList.remove("is-dealing", "is-third-emphasis");
+    card.style.removeProperty("--deal-x");
+    card.style.removeProperty("--deal-y");
   };
 
   return {
@@ -202,8 +236,11 @@ export function mountRoundTimeline(context: RoundTimelineContext): RoundTimeline
       return busy;
     },
     fastForward() {
+      fastForwarding = true;
       waiter.fastForward();
-      resolvePendingFrame?.();
+      for (const resolve of pendingFrames) {
+        resolve();
+      }
       context.tableElement.classList.add("speed-fast");
     },
     async play(steps) {
@@ -212,37 +249,50 @@ export function mountRoundTimeline(context: RoundTimelineContext): RoundTimeline
       }
 
       busy = true;
+      fastForwarding = false;
       waiter.reset();
       context.tableElement.classList.remove("speed-fast");
       context.hands.player.clear();
       context.hands.banker.clear();
 
       try {
-        for (let index = 0; index < steps.length; index += 1) {
+        const initialCards = steps.filter((step) => !step.isThird);
+        const thirdCards = steps.filter((step) => step.isThird);
+        const initialAnimations: Promise<void>[] = [];
+
+        for (let index = 0; index < initialCards.length; index += 1) {
           if (index > 0) {
-            await wait(140);
+            await wait(DEAL_STAGGER);
           }
 
-          const step = steps[index];
+          const step = initialCards[index]!;
           const hand = step.seat === "player" ? context.hands.player : context.hands.banker;
           const handle = hand.addCard(step.card);
-          if (step.isThird) {
-            handle.setRotated();
-          }
+          initialAnimations.push(animateInitialCard(step, handle));
+        }
+        await Promise.all(initialAnimations);
 
-          await animateCard(step, handle);
+        for (const step of thirdCards) {
+          const hand = step.seat === "player" ? context.hands.player : context.hands.banker;
+          const handle = hand.addCard(step.card);
+          handle.setRotated();
+          await animateThirdCard(step, handle);
           context.onTotals(step.playerTotal, step.bankerTotal);
         }
       } finally {
         busy = false;
-        resolvePendingFrame = undefined;
+        fastForwarding = false;
+        pendingFrames.clear();
         waiter.reset();
       }
     },
     destroy() {
       busy = false;
-      resolvePendingFrame?.();
-      resolvePendingFrame = undefined;
+      fastForwarding = false;
+      for (const resolve of pendingFrames) {
+        resolve();
+      }
+      pendingFrames.clear();
       waiter.clearPendingWait();
       context.tableElement.classList.remove("speed-fast");
     },

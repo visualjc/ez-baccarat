@@ -7,6 +7,7 @@ import { mountKeyboard, type KeyboardHandlers } from "./keyboard";
 import {
   createTimelineWaiter,
   playTimelineWaitSchedule,
+  roundUnlockWaitSchedule,
   timelineWaitSchedule,
   type TimelineStep,
   type TimelineTimers,
@@ -217,12 +218,12 @@ describe("QA timeline probe", () => {
     bankerTotal: 0,
   }));
 
-  test("normal six-card schedule equals the explicit sum of authored waits", () => {
-    const schedule = timelineWaitSchedule(steps, { deal: 380, flip: 300, third: 520 });
-    const specSum = 4 * (380 + 300) + 2 * (380 * 0.7 + 300 + 520) + 5 * 140;
-    expect(schedule.reduce((sum, duration) => sum + duration, 0)).toBe(specSum);
-    expect(specSum).toBe(5592);
-    expect(specSum).toBeGreaterThan(3400);
+  test("normal six-card schedule overlaps the initial deal and keeps settlement on the spec path", () => {
+    const schedule = roundUnlockWaitSchedule(steps, {
+      deal: 380, flip: 300, third: 520, bannerIn: 320, sweep: 520, pay: 420,
+    });
+    expect(schedule.reduce((sum, duration) => sum + duration, 0)).toBe(2866);
+    expect(schedule.reduce((sum, duration) => sum + duration, 0)).toBeLessThanOrEqual(6000);
   });
 
   test("fastForward resolves the active wait and the remainder of a schedule", async () => {

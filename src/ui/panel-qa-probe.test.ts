@@ -93,17 +93,17 @@ describe("mechanical count-panel QA probe", () => {
     for (const expected of expectedRounds) {
       const round = dealRound(engine);
       expect(round.counts.trace.before).toEqual(previousAfter);
-      expect(round.counts.trace.cards.map(traceTuple)).toEqual(expected.cards);
+      expect(round.counts.trace.cards.map(traceTuple)).toEqual(expected.cards.map((card) => [...card]));
       expect([
         round.counts.state.dragonRunning,
         round.counts.state.pandaRunning,
         round.counts.state.seenCount,
         round.counts.state.decksRemaining,
-      ]).toEqual(expected.after);
+      ]).toEqual([...expected.after]);
       expect([
         trueCount(round.counts.trace.after.dragon.true),
         trueCount(round.counts.trace.after.panda.true),
-      ]).toEqual(expected.displays);
+      ]).toEqual([...expected.displays]);
       expect(describeRound(round.counts.trace)).toEqual(expected.narration);
       previousAfter = round.counts.trace.after;
     }

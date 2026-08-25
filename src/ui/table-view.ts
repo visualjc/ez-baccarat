@@ -241,7 +241,7 @@ export function mountTableView(host: HTMLElement, deps: TableViewDeps): TableVie
           celebration.panda(playerHand.element.getBoundingClientRect());
         }
 
-        await waitForPayout(parseDuration("--dur-pay") + 180);
+        await waitForPayout(Math.max(parseDuration("--dur-sweep"), parseDuration("--dur-pay")));
         betLayout.clearAll();
         betLayout.clearSettlement();
         deps.onWagersChanged?.();

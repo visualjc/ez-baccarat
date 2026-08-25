@@ -1,0 +1,4 @@
+== pacing fix re-drive (host browser, seed 42) ==
+normal round DEAL->unlocked: 8996ms (was ~22000ms)
+FAST round: 2006ms (was 5-7s; was a hang before that)
+suite 58/58, tsc clean
