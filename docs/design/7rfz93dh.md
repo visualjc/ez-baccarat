@@ -211,7 +211,7 @@ visible.
 24px `--gold-hi`, with `--anim-total-tick` on change. Centre: chip tray, six
 chips (1 / 5 / 25 / 100 / 500 / 1000) in a row, `--chip-d` each, overlapping
 by 8px; the selected chip is raised 10px with a `--focus-ring` halo. Right:
-action cluster — `Clear` (ghost), `Rebet` (ghost), `DEAL` (primary, 148×48,
+action cluster — `Clear` (ghost), `Rebet` (ghost), `2x` (ghost, 72px), `DEAL` (primary, 148×48,
 gold gradient `linear-gradient(180deg, var(--gold-hi), var(--gold))`, ink
 `--ink-on-light`, disabled at 38% opacity when total wager is 0 or a round
 is animating).
@@ -356,7 +356,7 @@ innerHTML for user-derived strings (all text via `textContent`).
 | `ui/celebration.ts` | Ember + bamboo particle emitters | fills `#celebration-layer` with `<span class="ember">` / `<span class="leaf">` | `dragon(fromRect)`, `panda(fromRect)` |
 | `ui/round-timeline.ts` | The §3 sequencer: ordered promises, input lock, fast-forward | none | `play(result): Promise<void>`, `fastForward()` |
 | `ui/keyboard.ts` | Global key map (§5), guards while locked | `document` listener | `attach(handlers)`, `detach()` |
-| `ui/controls.ts` | DEAL / Clear / Rebet / New Shoe / mode toggle buttons + disabled logic | `<div class="actions">` | `setDealEnabled`, `setBusy` |
+| `ui/controls.ts` | DEAL / Clear / Rebet / 2x / New Shoe / mode toggle buttons + disabled logic | `<div class="actions">` | `setDealEnabled`, `setBusy` |
 | `ui/game.ts` | Wiring only: owns `EngineState`, calls `dealRound`, feeds `RoundTimeline`, emits bus events, applies settlement to bankroll | none | `newShoe(seed?)`, `deal()`, `mode` |
 | `ui/seed.ts` | Reads `?seed=` (F4.2), formats the header seed chip, exposes seed to `newShoe` | none | `fromLocation(): string \| undefined` |
 
@@ -401,11 +401,12 @@ derives a display suit deterministically from `card.id` —
 | `Backspace` | remove last chip from the last-touched spot |
 | `C` | clear all bets |
 | `R` | rebet previous wagers |
+| `X` | double the current wagers, or the last ones when the felt is empty |
 | `S` | new shoe (confirms if the shoe is live) |
 | `M` | toggle Trainer / Casino mode |
 | `?` | open the count-rules / help overlay (panel item owns its content) |
 | `Esc` | dismiss banner or overlay; cancels the New Shoe confirm |
-| `Tab` / `Shift+Tab` | focus order: chip tray → Panda 8 → Player → Tie → Banker → Dragon 7 → Clear → Rebet → DEAL → header controls |
+| `Tab` / `Shift+Tab` | focus order: chip tray → Panda 8 → Player → Tie → Banker → Dragon 7 → Clear → Rebet → 2x → DEAL → header controls |
 
 Modifier-bearing presses (`Ctrl`/`Meta`/`Alt`) are ignored, as are presses
 while focus is inside an `<input>`. All keys are no-ops while a round is

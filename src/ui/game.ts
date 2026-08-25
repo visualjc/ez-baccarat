@@ -5,10 +5,10 @@ import { mountKeyboard } from "./keyboard";
 import { formatSeedChip } from "./seed";
 import { mountShell } from "./shell";
 import { mountCountPanel } from "./count-panel";
-import { canRestoreHistory, cloneBetHistory, totalWager } from "./state";
+import { canRestoreHistory, cloneBetHistory, planDoubleWager, totalWager } from "./state";
 import { mountTableView } from "./table-view";
 import type { BetHistory, BetKind, GameMode } from "./types";
-import { formatNet } from "./types";
+import { formatCurrency, formatNet } from "./types";
 
 export interface GameHandle {
   mode: GameMode;
@@ -17,6 +17,7 @@ export interface GameHandle {
   toggleMode(): void;
   clearBets(): void;
   rebet(): void;
+  doubleBets(): void;
   removeLastBet(): void;
   destroy(): void;
 }
@@ -77,10 +78,13 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     const hasWagers = totalWager(wagers) > 0;
     const canRebet = canRestoreHistory(bankroll, state.lastHistory);
 
+    const doublePlan = planDoubleWager(bankroll, wagers, state.lastHistory);
+
     table.controls.setBusy(state.busy);
     table.controls.setDealEnabled(hasWagers && bankroll > 0);
     table.controls.clearButton.disabled = state.busy || !hasWagers;
     table.controls.rebetButton.disabled = state.busy || !canRebet;
+    table.controls.doubleButton.disabled = state.busy || !doublePlan.ok;
     table.betLayout.lock(state.busy);
     table.chipTray.setLocked(state.busy);
     shell.controls.newShoe.disabled = state.busy;
@@ -119,6 +123,11 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     rebet: () => {
       if (!state.busy) {
         gameHandle.rebet();
+      }
+    },
+    double: () => {
+      if (!state.busy) {
+        gameHandle.doubleBets();
       }
     },
     newShoe: () => {
@@ -261,6 +270,38 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
       table.betLayout.clearAll();
       syncControls();
     },
+    doubleBets() {
+      const plan = planDoubleWager(
+        table.bankroll.get(),
+        table.betLayout.snapshot(),
+        state.lastHistory,
+      );
+
+      if (!plan.ok) {
+        shell.announce(
+          plan.reason === "bankroll"
+            ? "Doubling would exceed bankroll."
+            : "No wagers to double.",
+        );
+        return;
+      }
+
+      // rebet() re-places chip by chip through the live bankroll predicate and
+      // rolls back if any chip is refused, so the over-wager hole stays shut
+      // even though the plan already checked the total.
+      if (!table.betLayout.rebet(plan.history)) {
+        shell.announce("Doubling would exceed bankroll.");
+        syncControls();
+        return;
+      }
+
+      shell.announce(
+        plan.source === "last"
+          ? `Last wagers doubled to ${formatCurrency(plan.total)}.`
+          : `Wagers doubled to ${formatCurrency(plan.total)}.`,
+      );
+      syncControls();
+    },
     rebet() {
       if (!state.lastHistory) {
         shell.announce("No previous wagers to restore.");
@@ -290,6 +331,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
 
   table.controls.clearButton.addEventListener("click", () => gameHandle.clearBets());
   table.controls.rebetButton.addEventListener("click", () => gameHandle.rebet());
+  table.controls.doubleButton.addEventListener("click", () => gameHandle.doubleBets());
   table.controls.dealButton.addEventListener("click", () => {
     if (state.busy) {
       table.fastForward();

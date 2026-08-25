@@ -7,6 +7,7 @@ export interface KeyboardHandlers {
   fastForward: () => void;
   clear: () => void;
   rebet: () => void;
+  double: () => void;
   newShoe: () => void;
   removeLast: () => void;
   toggleMode: () => void;
@@ -71,6 +72,7 @@ export function mountKeyboard(handlers: KeyboardHandlers) {
     else if (key === "6") handlers.selectChip(1000);
     else if (key === "c") handlers.clear();
     else if (key === "r") handlers.rebet();
+    else if (key === "x") handlers.double();
     else if (key === "s") handlers.newShoe();
     else if (key === "m") handlers.toggleMode();
     else if (key === "backspace") handlers.removeLast();

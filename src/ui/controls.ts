@@ -2,6 +2,7 @@ export interface ControlsHandle {
   element: HTMLElement;
   clearButton: HTMLButtonElement;
   rebetButton: HTMLButtonElement;
+  doubleButton: HTMLButtonElement;
   dealButton: HTMLButtonElement;
   setDealEnabled(enabled: boolean): void;
   setBusy(busy: boolean): void;
@@ -23,13 +24,21 @@ export function mountControls(host: HTMLElement): ControlsHandle {
   rebetButton.textContent = "Rebet";
   rebetButton.tabIndex = 13;
 
+  const doubleButton = document.createElement("button");
+  doubleButton.type = "button";
+  doubleButton.className = "btn btn-ghost btn-compact";
+  doubleButton.textContent = "2x";
+  doubleButton.setAttribute("aria-label", "Double wagers");
+  doubleButton.tabIndex = 14;
+
   const dealButton = document.createElement("button");
   dealButton.type = "button";
   dealButton.className = "btn btn-primary";
   dealButton.textContent = "DEAL";
-  dealButton.tabIndex = 14;
+  dealButton.tabIndex = 15;
 
-  wrapper.append(clearButton, rebetButton, dealButton);
+  // The escalation reads left to right: undo, repeat, raise, commit.
+  wrapper.append(clearButton, rebetButton, doubleButton, dealButton);
   host.append(wrapper);
 
   let dealEnabled = false;
@@ -38,6 +47,7 @@ export function mountControls(host: HTMLElement): ControlsHandle {
   const sync = () => {
     clearButton.disabled = busy;
     rebetButton.disabled = busy;
+    doubleButton.disabled = busy;
     dealButton.disabled = busy ? false : !dealEnabled;
     dealButton.textContent = busy ? "FAST" : "DEAL";
   };
@@ -48,6 +58,7 @@ export function mountControls(host: HTMLElement): ControlsHandle {
     element: wrapper,
     clearButton,
     rebetButton,
+    doubleButton,
     dealButton,
     setDealEnabled(enabled) {
       dealEnabled = enabled;
