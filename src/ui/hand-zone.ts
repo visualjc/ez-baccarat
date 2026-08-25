@@ -31,7 +31,9 @@ export function mountHandZone(host: HTMLElement, seat: Seat): HandZoneHandle {
   const rule = document.createElement("span");
   rule.className = "hand-rule";
 
-  root.append(label, cards, total, rule);
+  // DOM order matches the visual order, so a screen reader reads
+  // "PLAYER, 6" before the cards rather than after them.
+  root.append(label, total, cards, rule);
   host.append(root);
 
   const cardList: { card: Card; handle: ReturnType<typeof createCard> }[] = [];

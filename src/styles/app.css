@@ -335,11 +335,20 @@ button:focus-visible {
 .hand {
   position: relative;
   display: grid;
+  /* The total shares the label's line: the card lane is the one place it
+     cannot go without covering a card at some point in the round. */
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "label total"
+    "cards cards"
+    "rule  rule";
   align-content: start;
   gap: 14px;
 }
 
 .hand-label {
+  grid-area: label;
+  align-self: center;
   font-size: 13px;
   letter-spacing: .18em;
   text-transform: uppercase;
@@ -358,6 +367,7 @@ button:focus-visible {
 }
 
 .hand-cards {
+  grid-area: cards;
   display: flex;
   gap: 12px;
   min-height: var(--card-h);
@@ -365,28 +375,21 @@ button:focus-visible {
 }
 
 .hand-total {
-  position: absolute;
-  top: 44px;
-  width: 56px;
-  height: 56px;
+  grid-area: total;
+  justify-self: start;
+  width: 48px;
+  height: 34px;
   border-radius: 999px;
   border: 2px solid currentColor;
   display: grid;
   place-items: center;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   background: rgba(8, 48, 31, .7);
 }
 
-.hand[data-seat="player"] .hand-total {
-  left: calc(100% - 42px);
-}
-
-.hand[data-seat="banker"] .hand-total {
-  right: calc(100% - 42px);
-}
-
 .hand-rule {
+  grid-area: rule;
   min-height: 18px;
   color: var(--gold-hi);
   font-size: 12px;
