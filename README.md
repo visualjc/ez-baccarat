@@ -8,7 +8,7 @@ the trainer explains each count movement card by card.
 
 ## Play
 
-[Play in your browser](https://visualjc.github.io/ez-baccarat/)
+[Play in your browser](https://visualjc.github.io/ez-baccarat/) *(deploy pending: the Pages workflow lives at `docs/deploy/pages.yml` — move it to `.github/workflows/pages.yml` from a credential with workflow scope, then enable Pages → GitHub Actions in repo settings)*
 
 Or run it locally with [Bun](https://bun.sh/):
 
