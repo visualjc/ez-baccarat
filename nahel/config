@@ -1,0 +1,74 @@
+format: 1
+knowledge:
+  product: PRODUCT.md
+  context: CONTEXT.md
+  adr: docs/adr
+actor:
+  kind: human
+  id: maintainer
+contract:
+  launch: bun run dev
+  seed: "true"
+  test: bun test
+  healthcheck: curl -sf http://localhost:5173/ >/dev/null
+  ports:
+    - 5173
+routing:
+  architecture:
+    agent: claude
+    model: opus
+  implementation:
+    agent: codex
+    model: gpt-5.3-codex-spark
+  review:
+    agent: codex
+    model: gpt-5.6-terra
+  review2:
+    agent: claude
+    model: sonnet
+  default:
+    agent: codex
+    model: gpt-5.3-codex-spark
+roles:
+  dev:
+    agent: codex
+    model: gpt-5.3-codex-spark
+  reviewer-terra:
+    agent: codex
+    model: gpt-5.6-terra
+    effort: medium
+  reviewer-sonnet:
+    agent: claude
+    model: sonnet
+  qa:
+    agent: codex
+    model: gpt-5.6-sol
+    effort: medium
+  ui-designer:
+    agent: claude
+    model: opus
+  closer:
+    exec: self
+inception:
+  tier: standard
+  constitution_signed_by: jim
+founding:
+  mode: hands-off
+  paragraph: "Build an EZ Baccarat web game that is genuinely fun to play — nice
+    colors, satisfying animations — and that doubles as a Dragon 7 and Panda 8
+    counting trainer: it plays full EZ Baccarat shoes (standard drawing rules,
+    no commission, Dragon 7 pays 40:1 on a winning three-card Banker 7, Panda 8
+    pays 25:1 on a winning three-card Player 8, casino burn procedure with the
+    first card exposed), and beside the table it keeps both side-bet counts live
+    — the count rules, the running and true counts, and a per-round explanation
+    of why each count moved and when the bet is worth taking. Development is
+    dispatched per role: codex gpt-5.3-codex-spark writes all code including bug
+    fixes, codex gpt-5.6-terra (medium) and claude sonnet review, codex
+    gpt-5.6-sol (medium) runs QA, claude opus designs the UI, and the
+    orchestrating agent holds the judgment. This paragraph was given by Jim in
+    chat on 2026-08-24 and recorded by his delegated agent."
+governance:
+  product: delegated
+  architecture: human
+merge:
+  authority: on-approve

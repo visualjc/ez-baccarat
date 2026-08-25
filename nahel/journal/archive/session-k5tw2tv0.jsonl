@@ -1,0 +1,2 @@
+{"id":"vkpsmnx7","ts":"2026-08-25T02:37:12Z","seq":0,"type":"item.created","actor":{"kind":"agent","id":"claude-code"},"item":"kykj9751","payload":{"target":"item","record":{"id":"kykj9751","name":"founding-ez-baccarat","type":"plan","status":"backlog","lane":"direct","depends_on":[],"external_refs":[],"created":"2026-08-25T02:37:12Z","updated":"2026-08-25T02:37:12Z"},"body":""}}
+{"id":"025cqjg2","ts":"2026-08-25T02:37:12Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

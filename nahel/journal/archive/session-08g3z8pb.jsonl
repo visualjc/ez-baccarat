@@ -1,0 +1,2 @@
+{"id":"hb6s96ga","ts":"2026-08-25T02:35:38Z","seq":0,"type":"config.updated","actor":{"kind":"agent","id":"claude-code"},"payload":{"section":"governance","value":{"product":"delegated","architecture":"human"}}}
+{"id":"9gzkf2e0","ts":"2026-08-25T02:35:38Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

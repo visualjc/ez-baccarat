@@ -1,0 +1,2 @@
+{"id":"mf6cr41z","ts":"2026-08-25T02:36:42Z","seq":0,"type":"playbook.updated","actor":{"kind":"agent","id":"claude-code"},"payload":{"playbook":"build-review","created":true,"changed":["description","step design","step implement","step panel","step fix","step qa","step close"]}}
+{"id":"jwyfz2dy","ts":"2026-08-25T02:36:42Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

@@ -1,0 +1,2 @@
+{"id":"wsqqxdrk","ts":"2026-08-25T02:35:38Z","seq":0,"type":"config.updated","actor":{"kind":"agent","id":"claude-code"},"payload":{"section":"routing","value":{"architecture":{"agent":"claude","model":"opus"},"implementation":{"agent":"codex","model":"gpt-5.3-codex-spark"},"review":{"agent":"codex","model":"gpt-5.6-terra"},"review2":{"agent":"claude","model":"sonnet"},"default":{"agent":"codex","model":"gpt-5.3-codex-spark"}}}}
+{"id":"appnpjf1","ts":"2026-08-25T02:35:38Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

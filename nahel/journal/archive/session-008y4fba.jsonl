@@ -1,0 +1,2 @@
+{"id":"9dbqy6j1","ts":"2026-08-25T02:40:47Z","seq":0,"type":"config.updated","actor":{"kind":"agent","id":"claude-code"},"payload":{"section":"inception","value":{"tier":"standard","constitution_signed_by":"jim"}}}
+{"id":"q8sdqsj8","ts":"2026-08-25T02:40:47Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

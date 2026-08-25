@@ -1,0 +1,2 @@
+{"id":"r66vpfq5","ts":"2026-08-25T02:36:00Z","seq":0,"type":"config.updated","actor":{"kind":"agent","id":"claude-code"},"payload":{"section":"contract","value":{"launch":"bun run dev","seed":"true","test":"bun test","healthcheck":"curl -sf http://localhost:5173/ >/dev/null","ports":[5173]}}}
+{"id":"brmsznff","ts":"2026-08-25T02:36:00Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

@@ -1,0 +1,2 @@
+{"id":"n4h8nva7","ts":"2026-08-25T02:35:38Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"payload":{"summary":"first-scaffold obligation: run contract unproven on an empty repo — nahel doctor must exit 0 before any verify-by-driving PR opens"}}
+{"id":"xah4kf1r","ts":"2026-08-25T02:35:38Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

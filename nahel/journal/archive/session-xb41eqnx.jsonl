@@ -1,0 +1,2 @@
+{"id":"bwhq38h9","ts":"2026-08-25T02:36:09Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"payload":{"summary":"merge authority on-approve set under human:jim by his delegated agent — Jim's verbatim chat grant 2026-08-24: 'You have full merge, PR, QA, and other permissions' (delegation journaled in the nahel repo, event vzpj1m1d)"}}
+{"id":"e0fxy8v7","ts":"2026-08-25T02:36:09Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

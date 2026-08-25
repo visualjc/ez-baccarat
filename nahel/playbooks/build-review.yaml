@@ -1,0 +1,61 @@
+name: build-review
+description: "The one build recipe (ADR-0003): opus designs, spark implements,
+  terra+sonnet attack cross-vendor, spark fixes, sol QAs, the host closes. Bug
+  fixes ride the same recipe with design skipped (journaled role-skip)."
+steps:
+  - id: design
+    roles:
+      - ui-designer
+    guidance: "Design the UI for the work item this drive rides on, within
+      PRODUCT.md (palette, layout, animation list, component inventory,
+      interaction notes for mouse and keyboard). Write the spec to
+      docs/design/<item-id>.md and report its path plus a 10-line summary. Fun
+      is a hard constraint: name the specific animations and the palette hex
+      values, not adjectives."
+  - id: implement
+    roles:
+      - dev
+    guidance: "Implement the work item per its scope and the design spec:
+      {{bindings.design-spec}}. Stack per docs/adr/0001-stack.md (Vite +
+      TypeScript, no UI framework, engine as pure modules under src/engine/ with
+      bun tests). TDD for all engine code - failing test first, never weaken an
+      assertion. Then VERIFY BY DRIVING: launch the app (bun run dev), exercise
+      the changed flow end to end, and capture a verbatim transcript file of the
+      session. Report what changed, where, the full suite result, and the
+      transcript path. The committing host stores the transcript as an --output
+      artifact and binds its path as transcript."
+  - id: panel
+    roles:
+      - reviewer-terra
+      - reviewer-sonnet
+    guidance: "Review this change adversarially. Change summary:
+      {{bindings.change-summary}}. Execution evidence - read it beside the diff:
+      {{bindings.transcript}}. Attack the game math against PRODUCT.md domain
+      facts (tableau, payouts, burn procedure, both count systems and
+      thresholds), edge cases, the tests themselves (a test that cannot fail is
+      a flaw), and what the transcript shows the app actually DOING. Name each
+      flaw with file and line (or transcript moment). If you find none, say so
+      plainly."
+  - id: fix
+    roles:
+      - dev
+    guidance: "Fix the accepted findings from the panel: {{bindings.crit-terra}} and
+      {{bindings.crit-sonnet}}. Red-first where testable. A fix touching driven
+      surface re-arms the drive obligation - re-drive the changed flow and
+      report the fresh evidence. Report each finding with what changed for it."
+  - id: qa
+    roles:
+      - qa
+    guidance: QA the changed flow per the change summary
+      ({{bindings.change-summary}}) and the fix report
+      ({{bindings.fix-summary}}). Launch the app, play it like a hostile user
+      (weird bet sequences, shoe exhaustion, mode toggles, rapid clicks), and
+      check the count panel math by hand against PRODUCT.md tag tables for at
+      least three rounds. Capture defects with repro steps. End with a pass or
+      fail verdict and the evidence.
+  - id: close
+    roles:
+      - closer
+    guidance: Weigh the panel critiques, the fix report, and the QA verdict
+      ({{bindings.qa-verdict}}) against the code as merged. End with a
+      ship-or-fix decision and, if fix, the exact list it depends on.

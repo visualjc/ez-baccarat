@@ -1,0 +1,2 @@
+{"id":"mntxhem7","ts":"2026-08-25T02:36:09Z","seq":0,"type":"config.updated","actor":{"kind":"human","id":"jim"},"payload":{"section":"merge","value":{"authority":"on-approve"}}}
+{"id":"8wjr3gec","ts":"2026-08-25T02:36:09Z","seq":1,"type":"session.closed","actor":{"kind":"human","id":"jim"},"payload":{}}
