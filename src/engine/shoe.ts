@@ -115,16 +115,3 @@ export function finalizeRound(shoe: Shoe): void {
     shoe.retireAfterCurrentRound = false;
   }
 }
-
-export function normalizeCardSequence(cards: Card[]): string {
-  return cards.map((card) => `${card.id}-${card.rank}-${card.value}`).join(",");
-}
-
-export function rankFromValue(value: number): Rank {
-  const normalized = ((value % 10) + 10) % 10;
-  return ["A", "2", "3", "4", "5", "6", "7", "8", "9", "T"][normalized] as unknown as Rank;
-}
-
-export function isNatural(cards: readonly Card[]): boolean {
-  return cards.length === 2 && cards.reduce((sum, card) => sum + card.value, 0) % 10 >= 8;
-}

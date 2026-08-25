@@ -81,9 +81,9 @@ export function settleHand(playerCards: readonly Card[], bankerCards: readonly C
       : isTie
         ? 0
         : -1;
-  const tieMainPayout = isTie ? 8 : 0;
-  const dragonSidePayout = isDragon ? 40 : 0;
-  const pandaSidePayout = isPanda ? 25 : 0;
+  const tieMainPayout = isTie ? 8 : -1;
+  const dragonSidePayout = isDragon ? 40 : -1;
+  const pandaSidePayout = isPanda ? 25 : -1;
 
   return {
     outcome,

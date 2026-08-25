@@ -61,14 +61,14 @@ export function dealRound(state: EngineState): RoundResult {
   const bankerCards: Card[] = [];
   const seenThisRound: Card[] = [];
 
-  playerCards.push(drawCard(state.shoe));
-  playerCards.push(drawCard(state.shoe));
-  bankerCards.push(drawCard(state.shoe));
-  bankerCards.push(drawCard(state.shoe));
-  seenThisRound.push(
-    ...playerCards,
-    ...bankerCards,
-  );
+  const playerFirst = drawCard(state.shoe);
+  const bankerFirst = drawCard(state.shoe);
+  const playerSecond = drawCard(state.shoe);
+  const bankerSecond = drawCard(state.shoe);
+
+  playerCards.push(playerFirst, playerSecond);
+  bankerCards.push(bankerFirst, bankerSecond);
+  seenThisRound.push(playerFirst, bankerFirst, playerSecond, bankerSecond);
 
   const playerTotal = baccaratPoint(playerCards);
   const bankerTotal = baccaratPoint(bankerCards);
