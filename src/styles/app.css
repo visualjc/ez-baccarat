@@ -206,7 +206,7 @@ button:focus-visible {
   margin-inline: auto;
   width: 100%;
   display: grid;
-  grid-template-rows: 104px minmax(228px, 1fr) 212px 104px;
+  grid-template-rows: 104px minmax(228px, 1fr) 212px minmax(104px, auto);
   /* Rail thickness plus the gutter: the felt's rim stops at --rail-w, the UI
      starts one gutter further in. The felt layers below take --rail-w alone. */
   padding: calc(var(--rail-w) + var(--felt-gutter));
@@ -633,10 +633,31 @@ button:focus-visible {
 }
 
 #row-tray {
-  display: grid;
-  grid-template-columns: minmax(180px, 1fr) auto minmax(240px, 1fr);
+  /* Content-sized and wrapping, rather than three tracks with hand-picked
+     minimums: an explicit minmax() minimum overrides the automatic min-content
+     floor, which is how the action cluster ended up in a track narrower than
+     its own buttons and spilled left across the chips. Wrapping also means the
+     row restacks exactly when the content stops fitting, so no breakpoint has
+     to predict the width at which that happens. */
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 18px;
+  justify-content: space-between;
+  column-gap: var(--tray-gap);
+  row-gap: 12px;
+}
+
+/* The chips take the slack between the bankroll and the buttons and centre
+   themselves in it, which lands them left of the row's midline without
+   crowding the bankroll. */
+.tray-chips {
+  flex: 1 1 auto;
+}
+
+/* On its own wrapped line the cluster keeps the right edge it has when the
+   whole tray fits on one. */
+.tray-actions {
+  margin-left: auto;
 }
 
 .bankroll {
@@ -655,6 +676,10 @@ button:focus-visible {
   color: var(--gold-hi);
   font-size: 24px;
   font-weight: 700;
+  /* A max-content track would otherwise shuffle the whole tray as the
+     bankroll ticks between digit widths. */
+  min-width: 5ch;
+  font-variant-numeric: tabular-nums;
 }
 
 .chip-tray {
@@ -1000,7 +1025,7 @@ button:focus-visible {
   }
 
   #table-view {
-    grid-template-rows: 88px minmax(180px, 1fr) 184px 92px;
+    grid-template-rows: 88px minmax(180px, 1fr) 184px minmax(92px, auto);
   }
 
   #row-hands {
@@ -1020,8 +1045,14 @@ button:focus-visible {
     padding-bottom: 8px;
   }
 
+  /* One control per line, each full width. */
   #row-tray {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tray-actions {
+    margin-left: 0;
   }
 
   .actions {

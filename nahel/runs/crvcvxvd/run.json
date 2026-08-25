@@ -1,0 +1,13 @@
+{
+  "id": "crvcvxvd",
+  "item": "03ctcktt",
+  "actor": {
+    "kind": "agent",
+    "id": "codex"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T17:37:08Z",
+  "ended": "2026-08-25T17:40:54Z"
+}

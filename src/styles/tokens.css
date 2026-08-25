@@ -84,6 +84,7 @@
   --chip-d:           56px;
   --panel-w:          380px;
   --header-h:         56px;
+  --tray-gap:         18px;
 
   /* The wood rail's thickness (the felt's inset) and the breathing room
      between the felt's gold rim and the nearest UI element are two different
