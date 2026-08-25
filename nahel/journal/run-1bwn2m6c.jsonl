@@ -1,0 +1,1 @@
+{"id":"bkkr7445","ts":"2026-08-25T05:31:33Z","seq":0,"type":"run.started","actor":{"kind":"agent","id":"claude-code"},"run":"1bwn2m6c","item":"dh6xeqdg","payload":{"target":"run","record":{"id":"1bwn2m6c","item":"dh6xeqdg","actor":{"kind":"agent","id":"claude-code"},"lane":"full","phase":"starting","status":"active","started":"2026-08-25T05:31:33Z"}}}

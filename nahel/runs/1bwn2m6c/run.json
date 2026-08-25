@@ -1,0 +1,12 @@
+{
+  "id": "1bwn2m6c",
+  "item": "dh6xeqdg",
+  "actor": {
+    "kind": "agent",
+    "id": "claude-code"
+  },
+  "lane": "full",
+  "phase": "starting",
+  "status": "active",
+  "started": "2026-08-25T05:31:33Z"
+}
