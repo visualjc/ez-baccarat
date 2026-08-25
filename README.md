@@ -8,7 +8,7 @@ the trainer explains each count movement card by card.
 
 ## Play
 
-[Play in your browser](https://visualjc.github.io/ez-baccarat/) *(deploy pending: the Pages workflow lives at `docs/deploy/pages.yml` — move it to `.github/workflows/pages.yml` from a credential with workflow scope, then enable Pages → GitHub Actions in repo settings)*
+[Play in your browser](https://visualjc.github.io/ez-baccarat/)
 
 Or run it locally with [Bun](https://bun.sh/):
 
@@ -16,6 +16,11 @@ Or run it locally with [Bun](https://bun.sh/):
 bun install
 bun run dev
 ```
+
+The published site is built from `main` and pushed to the `gh-pages` branch by
+`scripts/deploy-pages.sh`, which GitHub Pages serves. Deploying from a branch
+rather than from Actions keeps the parked workflow at `docs/deploy/pages.yml`
+optional: this repo's push credential has `repo` but not `workflow` scope.
 
 ## Count systems
 
