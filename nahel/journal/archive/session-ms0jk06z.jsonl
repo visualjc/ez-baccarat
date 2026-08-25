@@ -1,0 +1,2 @@
+{"id":"ja8t29a0","ts":"2026-08-25T17:24:48Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"wf7yak5w","payload":{"target":"item","record":{"id":"wf7yak5w","name":"rail-gutter","type":"feature","status":"in-progress","lane":"direct","depends_on":[],"external_refs":[],"created":"2026-08-25T17:24:23Z","updated":"2026-08-25T17:24:48Z"},"body":""}}
+{"id":"0x00pbbk","ts":"2026-08-25T17:24:48Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}
