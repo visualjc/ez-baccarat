@@ -1,0 +1,2 @@
+{"id":"z0y334ba","ts":"2026-08-25T16:32:52Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"26t84eh1","payload":{"target":"item","record":{"id":"26t84eh1","name":"burn-ritual-layout","type":"feature","status":"in-review","lane":"direct","depends_on":[],"external_refs":[],"created":"2026-08-25T16:16:03Z","updated":"2026-08-25T16:32:52Z"},"body":""}}
+{"id":"qgz3txs6","ts":"2026-08-25T16:32:52Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}
