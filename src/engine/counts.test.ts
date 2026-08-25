@@ -10,6 +10,7 @@ import {
   PANDA_COUNT_THRESHOLD,
   PANDA_TAG_TABLE,
 } from "./counts";
+import { createEngine, dealRound } from "./engine";
 
 function makeCard(rank: Card["rank"], id = 0): Card {
   return { id, rank, value: valueFromRank(rank) };
@@ -83,9 +84,9 @@ describe("round trace math", () => {
     const result = advanceRoundCountState(state, roundCards);
 
     expect(result.trace.cards).toEqual([
-      { rank: "A", dragonTag: 0, pandaTag: 1 },
-      { rank: "9", dragonTag: 2, pandaTag: 4 },
-      { rank: "2", dragonTag: 0, pandaTag: 1 },
+      { rank: "A", dragonTag: 0, pandaTag: 1, dragonRunningAfter: 0, pandaRunningAfter: 1 },
+      { rank: "9", dragonTag: 2, pandaTag: 4, dragonRunningAfter: 2, pandaRunningAfter: 5 },
+      { rank: "2", dragonTag: 0, pandaTag: 1, dragonRunningAfter: 2, pandaRunningAfter: 6 },
     ]);
     expect(result.trace.before.dragon.running).toBe(0);
     expect(result.trace.before.dragon.true).toBe(0);
@@ -107,3 +108,11 @@ describe("round trace math", () => {
   });
 });
 
+test("engine keeps the exposed burn trace separate from round one", () => {
+  const engine = createEngine({ seed: "count-panel-burn", decks: 1, cutOffset: 1 });
+  const openingSeen = engine.openingCounts.state.seenCount;
+  const result = dealRound(engine);
+  expect(result.counts.trace.before.dragon.running).toBe(engine.openingCounts.trace.after.dragon.running);
+  expect(result.counts.state.seenCount).toBe(openingSeen + result.seenThisRound.length);
+  expect(result.counts.trace.cards).toHaveLength(result.seenThisRound.length);
+});

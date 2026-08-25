@@ -1,0 +1,6 @@
+== count-panel-trainer verify-by-driving (host browser, seed 42) ==
+- shoe open: COUNT TRAINER shows 7.98 decks unseen (416-1 seen; face-down burn excluded), Dragon TRUE 0.0 RUN 0 NO-BET "needs true >= +4 - 4.0 to go", Panda TRUE 0.1 RUN +1 (exposed Ace), OPENING BURN row [A | BURN | D7 0 | P8 +1], "1 card burned face down - uncounted", plain-English explanation before round 1
+- round 1 (9,7,5,A; banker natural 8 over 4): trace rows exact per PRODUCT.md tags — 9: D7 +2->+2 P8 +4->+5; 7: D7 -1->+1 P8 -1->+4; 5: D7 -1->0 P8 -2->+2; A: D7 0->0 P8 +1->+3. Headers: Dragon TRUE 0.0 RUN 0; Panda TRUE 0.4 RUN +3 at 7.90 decks unseen (411/52) — hand-checked exact
+- delta sentences generated from data ("Dragon unchanged: two -1 cards (7, 5) against one +2 card (9); one neutral (A)...") — hard constraint 2 satisfied
+- FAST round completed in 4.7s; bankroll 2175->2150 (lost player bet) correct
+- suite 50/50, tsc clean, vite build clean

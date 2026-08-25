@@ -24,6 +24,8 @@
   --anim-banner-in: calc(var(--dur-banner-in) * var(--speed-scale));
   --anim-banner-out: calc(var(--dur-banner-out) * var(--speed-scale));
   --anim-total: calc(300ms * var(--speed-scale));
+  --dur-count-tick: 420ms; --dur-signal-out: 160ms; --dur-signal-in: 220ms; --dur-trace-row: 260ms; --dur-reveal: 420ms;
+  --anim-count-tick: calc(var(--dur-count-tick) * var(--speed-scale)); --anim-signal-out: calc(var(--dur-signal-out) * var(--speed-scale)); --anim-signal-in: calc(var(--dur-signal-in) * var(--speed-scale)); --anim-trace-row: calc(var(--dur-trace-row) * var(--speed-scale)); --anim-reveal: calc(var(--dur-reveal) * var(--speed-scale));
 }
 
 /* The timeline also resolves its active wait when this is applied. */
@@ -135,6 +137,18 @@
   }
 }
 
+@keyframes count-tick-up { 0% { transform: translateY(-6px) scale(1.07); color: var(--tick-color); } 100% { transform: translateY(0) scale(1); } }
+@keyframes count-tick-down { 0% { transform: translateY(6px) scale(.94); color: var(--tick-color); } 100% { transform: translateY(0) scale(1); } }
+@keyframes signal-flip-out { from { transform: rotateX(0); opacity: 1; } to { transform: rotateX(90deg); opacity: .35; } }
+@keyframes signal-flip-in { from { transform: rotateX(-90deg); opacity: .35; } to { transform: rotateX(0); opacity: 1; } }
+@keyframes trace-row-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes count-reveal { from { opacity: 0; filter: blur(8px); transform: scale(1.04); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
+
+.count-tick-up { animation: count-tick-up var(--anim-count-tick) var(--ease-pop); }
+.count-tick-down { animation: count-tick-down var(--anim-count-tick) var(--ease-pop); }
+.signal-flip { animation: signal-flip-out var(--anim-signal-out) var(--ease-exit), signal-flip-in var(--anim-signal-in) var(--ease-pop) var(--anim-signal-out); }
+.count-reveal { animation: count-reveal var(--anim-reveal) var(--ease-emph); }
+
 .anim-total-tick {
   animation: total-tick var(--anim-total) linear;
 }
@@ -146,6 +160,7 @@
     --dur-dragon: 1ms; --dur-panda: 1ms;
     --dur-burn-expose: 1ms; --dur-burn-hold: 1200ms; --dur-burn-fan: 1ms;
     --dur-banner-in: 200ms; --dur-banner-out: 200ms; --dur-panel: 1ms;
+    --dur-count-tick: 1ms; --dur-signal-out: 1ms; --dur-signal-in: 1ms; --dur-trace-row: 1ms; --dur-reveal: 1ms;
   }
 
   #celebration-layer {

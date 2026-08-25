@@ -4,6 +4,7 @@ import { createBus } from "./bus";
 import { mountKeyboard } from "./keyboard";
 import { formatSeedChip } from "./seed";
 import { mountShell } from "./shell";
+import { mountCountPanel } from "./count-panel";
 import { canRestoreHistory, cloneBetHistory, totalWager } from "./state";
 import { mountTableView } from "./table-view";
 import type { BetHistory, BetKind, GameMode } from "./types";
@@ -62,6 +63,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     announce: shell.announce,
     onWagersChanged: () => syncControls(),
   });
+  const panel = mountCountPanel(shell.panelSlot, bus);
 
   const syncCardsRemaining = () => {
     const remaining = state.engine ? cardsRemaining(state.engine.shoe) : 0;
@@ -103,11 +105,12 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     deal: () => {
       if (state.busy) {
         table.fastForward();
+        panel.fastForward();
         return;
       }
       void gameHandle.deal();
     },
-    fastForward: () => table.fastForward(),
+    fastForward: () => { table.fastForward(); panel.fastForward(); },
     clear: () => {
       if (!state.busy) {
         gameHandle.clearBets();
@@ -136,6 +139,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     dismiss: () => {
       if (state.busy) {
         table.fastForward();
+        panel.fastForward();
       } else {
         table.outcomeBanner.hide();
       }
@@ -177,6 +181,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
         exposedBurnCard: state.engine.exposedBurnCard,
         unseenBurnCount: state.engine.unseenBurnCards.length,
         cardsRemaining: cardsRemaining(state.engine.shoe),
+        openingCounts: state.engine.openingCounts,
       });
 
       await table.shoe.shake();
@@ -190,6 +195,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     async deal() {
       if (state.busy) {
         table.fastForward();
+        panel.fastForward();
         return;
       }
 
@@ -277,6 +283,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     destroy() {
       keyboard.detach();
       table.destroy();
+      panel.destroy();
       shell.app.remove();
     },
   };
@@ -286,6 +293,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
   table.controls.dealButton.addEventListener("click", () => {
     if (state.busy) {
       table.fastForward();
+      panel.fastForward();
       return;
     }
     void gameHandle.deal();

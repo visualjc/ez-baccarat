@@ -1,6 +1,7 @@
 import { Card } from "./card";
 import {
   advanceRoundCountState,
+  CountRoundResult,
   CountPairSignal,
   CountState,
   createInitialCountState,
@@ -21,7 +22,9 @@ export interface RoundResult {
   playerCards: Card[];
   bankerCards: Card[];
   seenThisRound: Card[];
+  /** @deprecated for count display; use counts. */
   seenThisRoundForCounts: Card[];
+  counts: CountRoundResult;
   settlement: ReturnType<typeof settleHand>;
   cutCardReachedDuringRound: boolean;
   shoeRetiredAfterRound: boolean;
@@ -41,6 +44,7 @@ export interface EngineState {
   unseenBurnCards: Card[];
   countState: CountState;
   countSignals: CountPairSignal;
+  openingCounts: CountRoundResult;
 }
 
 export function createEngine(options: EngineOptions = {}): EngineState {
@@ -65,6 +69,7 @@ export function createEngine(options: EngineOptions = {}): EngineState {
     unseenBurnCards: opened.unseenBurnCards,
     countState: openingCount.state,
     countSignals: openingCount.trace.after,
+    openingCounts: openingCount,
   };
 }
 
@@ -146,6 +151,7 @@ export function dealRound(state: EngineState): RoundResult {
     bankerCards,
     seenThisRound,
     seenThisRoundForCounts,
+    counts: roundCount,
     settlement,
     cutCardReachedDuringRound,
     shoeRetiredAfterRound: state.shoe.retired,

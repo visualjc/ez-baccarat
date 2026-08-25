@@ -1,8 +1,9 @@
 import type { Card } from "../engine/card";
 import type { RoundResult } from "../engine/engine";
+import type { CountRoundResult } from "../engine/counts";
 
 export type GameEvent =
-  | { type: "shoe:opened"; exposedBurnCard: Card; unseenBurnCount: number; cardsRemaining: number }
+  | { type: "shoe:opened"; exposedBurnCard: Card; unseenBurnCount: number; cardsRemaining: number; openingCounts: CountRoundResult }
   | { type: "round:start"; round: number }
   | { type: "card:seen"; card: Card; seat: "player" | "banker"; index: number }
   | { type: "round:settled"; result: RoundResult; cardsRemaining: number }

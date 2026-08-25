@@ -58,6 +58,8 @@ export interface CountCardTrace {
   rank: Rank;
   dragonTag: number;
   pandaTag: number;
+  dragonRunningAfter: number;
+  pandaRunningAfter: number;
 }
 
 export interface CountRoundTrace {
@@ -140,12 +142,16 @@ function stateSignal(state: Pick<CountState, "dragonRunning" | "pandaRunning" | 
   };
 }
 
-export function traceRoundCards(cards: readonly Card[]): CountCardTrace[] {
-  return cards.map((card) => ({
-    rank: card.rank,
-    dragonTag: dragonTagForRank(card.rank),
-    pandaTag: pandaTagForRank(card.rank),
-  }));
+export function traceRoundCards(cards: readonly Card[], fromDragonRunning = 0, fromPandaRunning = 0): CountCardTrace[] {
+  let dragonRunning = fromDragonRunning;
+  let pandaRunning = fromPandaRunning;
+  return cards.map((card) => {
+    const dragonTag = dragonTagForRank(card.rank);
+    const pandaTag = pandaTagForRank(card.rank);
+    dragonRunning += dragonTag;
+    pandaRunning += pandaTag;
+    return { rank: card.rank, dragonTag, pandaTag, dragonRunningAfter: dragonRunning, pandaRunningAfter: pandaRunning };
+  });
 }
 
 export function advanceRoundCountState(
@@ -155,13 +161,9 @@ export function advanceRoundCountState(
 ): CountRoundResult {
   const before = normalizeState(state, totalCards);
   const beforeSignal = stateSignal(before, totalCards);
-  let dragonRunning = before.dragonRunning;
-  let pandaRunning = before.pandaRunning;
-
-  for (const card of seenThisRound) {
-    dragonRunning += dragonTagForRank(card.rank);
-    pandaRunning += pandaTagForRank(card.rank);
-  }
+  const cards = traceRoundCards(seenThisRound, before.dragonRunning, before.pandaRunning);
+  const dragonRunning = cards.at(-1)?.dragonRunningAfter ?? before.dragonRunning;
+  const pandaRunning = cards.at(-1)?.pandaRunningAfter ?? before.pandaRunning;
 
   const seenCount = before.seenCount + seenThisRound.length;
   const after: CountState = {
@@ -174,7 +176,7 @@ export function advanceRoundCountState(
   return {
     state: after,
     trace: {
-      cards: traceRoundCards(seenThisRound),
+      cards,
       before: beforeSignal,
       after: stateSignal(after, totalCards),
     },
@@ -189,4 +191,3 @@ export function validateTagTables(): boolean {
     Number.isInteger(DRAGON_TAG_TABLE[rank]) && Number.isInteger(PANDA_TAG_TABLE[rank]),
   );
 }
-
