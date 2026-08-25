@@ -634,9 +634,13 @@ button:focus-visible {
 
 #row-tray {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) auto minmax(240px, 1fr);
+  /* Content-sized outer tracks. An explicit minmax() minimum overrides the
+     automatic min-content floor, which is how the action cluster ended up in a
+     track narrower than its own buttons and spilled left across the chips. */
+  grid-template-columns: max-content auto max-content;
+  justify-content: space-between;
   align-items: center;
-  gap: 18px;
+  column-gap: var(--tray-gap);
 }
 
 .bankroll {
@@ -655,6 +659,10 @@ button:focus-visible {
   color: var(--gold-hi);
   font-size: 24px;
   font-weight: 700;
+  /* A max-content track would otherwise shuffle the whole tray as the
+     bankroll ticks between digit widths. */
+  min-width: 5ch;
+  font-variant-numeric: tabular-nums;
 }
 
 .chip-tray {
@@ -979,6 +987,22 @@ button:focus-visible {
     --card-w: 76px;
     --card-h: 108px;
   }
+  /* Bankroll and chips share row one, the buttons take a full-width row two:
+     one row cannot hold 80 + 296 + 376px of content on a 712px felt. */
+  #table-view {
+    grid-template-rows: 104px minmax(228px, 1fr) 212px 120px;
+  }
+
+  #row-tray {
+    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    row-gap: 12px;
+  }
+
+  .tray-bankroll { grid-column: 1; grid-row: 1; }
+  .tray-chips { grid-column: 2; grid-row: 1; justify-self: end; }
+  .tray-actions { grid-column: 1 / -1; grid-row: 2; }
+
   .count-block { height: 118px; }.count-true { font-size: 34px; }.trace-cols, .trace-row { grid-template-columns: 26px 28px 36px 52px 36px 52px; gap: 6px; }.tag-grid { grid-template-columns: repeat(5, 1fr); }
 
 }
@@ -1022,6 +1046,15 @@ button:focus-visible {
 
   #row-tray {
     grid-template-columns: 1fr;
+  }
+
+  /* Undo the two-row placement inherited from the 1239px block. */
+  .tray-bankroll,
+  .tray-chips,
+  .tray-actions {
+    grid-column: auto;
+    grid-row: auto;
+    justify-self: stretch;
   }
 
   .actions {
