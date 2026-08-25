@@ -1,0 +1,13 @@
+{
+  "id": "ffnwn3fm",
+  "item": "4tf7cfvg",
+  "actor": {
+    "kind": "agent",
+    "id": "claude-code"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T04:29:37Z",
+  "ended": "2026-08-25T04:59:57Z"
+}

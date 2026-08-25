@@ -1,0 +1,5 @@
+== counts fix verification 2026-08-25T03:45:50Z ==
+ 0 fail
+ 310 expect() calls
+Ran 33 tests across 5 files. [16.00ms]
+tsc exit 0

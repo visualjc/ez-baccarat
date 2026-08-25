@@ -1,0 +1,2 @@
+{"id":"05rjqgvp","ts":"2026-08-25T02:43:06Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"x31766d8","payload":{"summary":"PRD proposed for delegated approval: docs/prds/ez-baccarat-game.md","prd":"docs/prds/ez-baccarat-game.md","revision":"7e4ed7f33f414c6a94d27605d419b6e772e11557","assumptions":["9tcstha5","6nct70qk","ez5v2xs0","rxwqayyt"]}}
+{"id":"8shr123s","ts":"2026-08-25T02:43:06Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

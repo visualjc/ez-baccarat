@@ -1,0 +1,11 @@
+== app-shell-table verify-by-driving (host browser session, seed=42, 1280x900) ==
+- suite: 36 pass / 0 fail (incl. src/ui/state.test.ts settlement/bankroll tests); tsc --noEmit clean; vite build clean
+- page loads: EZ BACCARAT gold-on-felt header, shoe meter 414/416 after burn (2 cards consumed: exposed + 1 face-down for an Ace), discard box "2", SEED 42 chip, Trainer/Casino toggle, "?" rules button, count-panel dock reserved (empty — sibling item)
+- five bet spots render with payouts (Panda 8 25:1, Player 1:1, Tie 8:1, Banker 1:1 "DRAGON PUSHES", Dragon 7 40:1); chip tray 1/5/25/100/500/1000; bankroll $1,000 from localStorage
+- placed $25 Player + $25 Dragon 7 by clicking chip 25 then spots; wagers rendered on spots; DEAL became FAST during animation
+- deal animation live: cards slide from shoe, flip reveal (7♥ mid-flip captured), status line narrates ("Player 1st card 9", "Player 2nd card 5", "Banker 1st card 7")
+- round settled: Banker 8 (7♥ + A♠ natural) over Player 4 (9,5) — status "Banker 8 over 4. Net -$50" — CORRECT: both bets lose, signed-net math right in UI
+- bets cleared after settle, DEAL restored, Rebet available
+OBSERVED DEFECTS (for the panel):
+1. LAYOUT CLIP at 1280px: the player hand zone and Panda 8 spot render partially off-canvas left; the table surface overflows its container with no scroll or scale — player's first card is half-hidden during play
+2. FAST button pacing: clicking FAST still leaves ~2-4s between card reveals; expected near-instant completion

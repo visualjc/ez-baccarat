@@ -1,0 +1,2 @@
+{"id":"9tcstha5","ts":"2026-08-25T02:42:48Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"x31766d8","payload":{"summary":"assumption: cut card at ~14 cards from the shoe end (common casino placement) — if wrong, only shoe length changes; count math is unaffected"}}
+{"id":"7ea5ytdd","ts":"2026-08-25T02:42:48Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

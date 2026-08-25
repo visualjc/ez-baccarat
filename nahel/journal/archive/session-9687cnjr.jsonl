@@ -1,0 +1,2 @@
+{"id":"wjhkag8q","ts":"2026-08-25T05:00:19Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"sk6gevft","payload":{"target":"item","record":{"id":"sk6gevft","name":"round-pacing-over-spec","type":"bug","status":"in-progress","lane":"direct","parent":"dh6xeqdg","depends_on":[],"external_refs":[],"playbook":"build-review","created":"2026-08-25T04:29:13Z","updated":"2026-08-25T05:00:19Z"},"body":""}}
+{"id":"e8sjdv6t","ts":"2026-08-25T05:00:19Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

@@ -1,0 +1,92 @@
+:root {
+  /* Felt & surfaces */
+  --felt-deep:        #08301F;
+  --felt-base:        #0E4630;
+  --felt-mid:         #14573C;
+  --felt-glow:        #1C6E4C;   /* radial centre of the table */
+  --felt-line:        #2E8A63;   /* hairline layout rules on felt */
+  --rail-wood:        #4A2B18;
+  --rail-wood-hi:     #6E4126;
+  --rail-wood-lo:     #2C180C;
+  --shell-bg:         #0A1712;   /* page behind the table */
+  --panel-bg:         #0F241C;   /* count-panel column */
+  --panel-edge:       #1D4737;
+
+  /* Type */
+  --ink-bright:       #F6F0E2;
+  --ink:              #E3DBC6;
+  --ink-muted:        #9DB4A8;
+  --ink-dim:          #6E877C;
+  --ink-on-light:     #14171A;
+
+  /* Metallic accent */
+  --gold:             #E8B84B;
+  --gold-hi:          #F9DE97;
+  --gold-lo:          #A97F1E;
+  --gold-glass:       rgba(232, 184, 75, 0.18);
+
+  /* Sides */
+  --player:           #3D82DC;
+  --player-deep:      #17407E;
+  --player-glow:      #96C4FF;
+  --banker:           #C93B4C;
+  --banker-deep:      #7C1B27;
+  --banker-glow:      #FF97A4;
+  --tie:              #1FB6A6;
+  --tie-deep:         #0C6A61;
+  --tie-glow:         #8CF0E5;
+
+  /* Side bets */
+  --dragon:           #FF5A2D;
+  --dragon-deep:      #8C2A0E;
+  --dragon-glow:      #FFB067;
+  --dragon-flame-1:   #FFE08A;
+  --dragon-flame-2:   #FF8A32;
+  --dragon-flame-3:   #C21F1F;
+  --panda-ink:        #14171A;
+  --panda-white:      #F7F7F2;
+  --panda-bamboo:     #63C97C;
+  --panda-bamboo-lo:  #24713F;
+  --panda-glow:       #C6F3D2;
+
+  /* Cards */
+  --card-face:        #FCFAF4;
+  --card-face-edge:   #DCD4C2;
+  --card-pip-black:   #1B1B1F;
+  --card-pip-red:     #C42B34;
+  --card-back:        #6E1622;
+  --card-back-deep:   #400C14;
+  --card-back-gold:   #D4AF57;
+  --card-back-rim:    #F2E2B6;
+  --card-shadow:      rgba(0, 0, 0, 0.45);
+
+  /* Chips — tier value : face / edge / text */
+  --chip-1-face:      #F2F0E6;  --chip-1-edge:    #BFB9A6;  --chip-1-text: #14171A;
+  --chip-5-face:      #D2373F;  --chip-5-edge:    #8A1B22;  --chip-5-text: #FFF4F2;
+  --chip-25-face:     #16794F;  --chip-25-edge:   #0B4B30;  --chip-25-text: #EAFBF2;
+  --chip-100-face:    #191C22;  --chip-100-edge:  #454B57;  --chip-100-text: #F3EFE2;
+  --chip-500-face:    #6D3BA8;  --chip-500-edge:  #3F2064;  --chip-500-text: #F4ECFF;
+  --chip-1000-face:   #E8B84B;  --chip-1000-edge: #A97F1E;  --chip-1000-text: #2A1D02;
+
+  /* Signals & states */
+  --win:              #37D693;
+  --lose:             #B4444F;
+  --push:             #C9A64A;
+  --focus-ring:       #F9DE97;
+  --danger:           #E8613F;
+
+  /* Geometry */
+  --rail-radius:      28px;
+  --spot-radius:      18px;
+  --card-w:           92px;
+  --card-h:           132px;
+  --card-radius:      8px;
+  --chip-d:           56px;
+  --panel-w:          380px;
+  --header-h:         56px;
+
+  /* Shadows */
+  --shadow-table:     0 26px 60px rgba(0,0,0,0.55);
+  --shadow-card:      0 6px 14px var(--card-shadow);
+  --shadow-chip:      0 3px 6px rgba(0,0,0,0.45), inset 0 -2px 0 rgba(0,0,0,0.25);
+}

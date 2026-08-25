@@ -1,0 +1,7 @@
+== engine-counts drive 2026-08-25T03:22:48Z ==
+-- bun test:
+ 0 fail
+ 286 expect() calls
+Ran 25 tests across 3 files. [10.00ms]
+-- tsc:
+exit 0

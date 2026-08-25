@@ -1,0 +1,2 @@
+{"id":"ena65nvh","ts":"2026-08-25T02:50:50Z","seq":0,"type":"item.created","actor":{"kind":"agent","id":"claude-code"},"item":"pge65a4e","payload":{"target":"item","record":{"id":"pge65a4e","name":"full-game-qa","type":"qa","status":"backlog","lane":"direct","parent":"dh6xeqdg","depends_on":["4tf7cfvg"],"external_refs":[],"created":"2026-08-25T02:50:50Z","updated":"2026-08-25T02:50:50Z"},"body":""}}
+{"id":"jcx1y8xw","ts":"2026-08-25T02:50:50Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

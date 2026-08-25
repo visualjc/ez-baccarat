@@ -1,0 +1,13 @@
+{
+  "id": "3w8tt585",
+  "item": "7rfz93dh",
+  "actor": {
+    "kind": "agent",
+    "id": "codex"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T04:09:41Z",
+  "ended": "2026-08-25T04:13:30Z"
+}

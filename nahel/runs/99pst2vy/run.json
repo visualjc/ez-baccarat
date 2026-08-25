@@ -1,0 +1,13 @@
+{
+  "id": "99pst2vy",
+  "item": "9x1w62ms",
+  "actor": {
+    "kind": "agent",
+    "id": "codex"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T03:06:32Z",
+  "ended": "2026-08-25T03:12:53Z"
+}

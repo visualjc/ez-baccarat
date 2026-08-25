@@ -1,0 +1,13 @@
+{
+  "id": "6avycvah",
+  "item": "fc5v6szj",
+  "actor": {
+    "kind": "agent",
+    "id": "codex"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T03:18:30Z",
+  "ended": "2026-08-25T03:18:56Z"
+}

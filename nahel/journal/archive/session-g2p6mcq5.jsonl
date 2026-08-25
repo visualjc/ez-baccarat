@@ -1,0 +1,2 @@
+{"id":"qgas4pbp","ts":"2026-08-25T02:50:50Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"fc5v6szj","payload":{"summary":"scope: PRD F1.5-F1.6 — both count systems (tags per PRODUCT.md), running/true counts, decks-remaining from unseen cards, bet signals at thresholds, and the per-round trace (ordered seen cards with both tags and before/after states). Pure modules + exhaustive tests incl. burn-card counting"}}
+{"id":"zkzccwqz","ts":"2026-08-25T02:50:50Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

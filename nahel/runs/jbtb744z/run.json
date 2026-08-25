@@ -1,0 +1,13 @@
+{
+  "id": "jbtb744z",
+  "item": "fc5v6szj",
+  "actor": {
+    "kind": "agent",
+    "id": "claude"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T03:23:08Z",
+  "ended": "2026-08-25T03:26:18Z"
+}

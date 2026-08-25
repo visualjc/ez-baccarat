@@ -1,0 +1,2 @@
+{"id":"4w7nvhsf","ts":"2026-08-25T02:50:50Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"4tf7cfvg","payload":{"summary":"scope: PRD F3 — count panel: live counts/signals, per-round why-trace rendered from engine data, collapsible rules reference, trainer/casino modes"}}
+{"id":"gvh2x26x","ts":"2026-08-25T02:50:50Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

@@ -1,0 +1,5 @@
+== pacing fix-2 re-drive (host browser) ==
+seed 60 dragon round (6 cards + celebration): 12997ms — celebrations exempt per budget rule
+prior measure: normal round 8996ms (was 22s), FAST 2006ms (was hang)
+third-card reveal restored to 520ms with mounted-timeline oracle (sonnet finding closed red-first)
+suite 59/59, tsc clean

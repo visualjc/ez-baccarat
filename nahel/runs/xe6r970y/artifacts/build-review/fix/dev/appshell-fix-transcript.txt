@@ -1,0 +1,5 @@
+== app-shell fix-step re-drives (host browser, seed 42, 1280x900) ==
+Fix run 1 (tt0pbyw5): layout clip FIXED — five spots + both hands fully visible; settlement + determinism verified (+$25 banker win, same seed same outcome); REGRESSIONS observed: card faces stuck on backs, FAST ineffective.
+Fix run 2 (3w8tt585): faces reveal again (9♦ et al); FAST still hung the round (table stuck in speed-fast, never settled) — forensics captured (speed-scale scope mismatch, stranded awaits).
+Fix run 3 (11baxjbs): hang gone — FAST round completes in 6.0s, normal round 21.9s, 20 suit glyphs rendered, suite 42/42, tsc clean.
+RESIDUAL (accepted, carried to QA): pacing over spec — normal round ~22s vs ~8s spec-sum; FAST ~6s vs near-instant intent. Playable, no hang, no clip.

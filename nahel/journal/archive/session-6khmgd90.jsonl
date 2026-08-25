@@ -1,0 +1,2 @@
+{"id":"sqt75vc0","ts":"2026-08-25T02:50:49Z","seq":0,"type":"item.created","actor":{"kind":"agent","id":"claude-code"},"item":"dh6xeqdg","payload":{"target":"item","record":{"id":"dh6xeqdg","name":"ez-baccarat-game","type":"feature","status":"backlog","lane":"full","depends_on":[],"external_refs":[],"prd":"docs/prds/ez-baccarat-game.md","playbook":"build-review","created":"2026-08-25T02:50:49Z","updated":"2026-08-25T02:50:49Z"},"body":""}}
+{"id":"vd3axghf","ts":"2026-08-25T02:50:49Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

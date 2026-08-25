@@ -1,0 +1,2 @@
+{"id":"3q6dxz5d","ts":"2026-08-25T02:50:49Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"dh6xeqdg","payload":{"summary":"prd-parse: feature epic created from approved PRD (revision 72806aa, delegated approval mhrwq6ad); lane full; playbook build-review named on the parent as the decompose-time template (ADR-0003, bridge decision vy4vn7de)"}}
+{"id":"t96c42g2","ts":"2026-08-25T02:50:49Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

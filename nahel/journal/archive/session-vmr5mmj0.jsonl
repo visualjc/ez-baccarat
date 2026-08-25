@@ -1,0 +1,2 @@
+{"id":"d8eah7tf","ts":"2026-08-25T03:16:25Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"9x1w62ms","payload":{"target":"item","record":{"id":"9x1w62ms","name":"engine-core","type":"feature","status":"in-review","lane":"direct","parent":"dh6xeqdg","depends_on":[],"external_refs":[],"playbook":"build-review","created":"2026-08-25T02:50:49Z","updated":"2026-08-25T03:16:25Z"},"body":""}}
+{"id":"t94f8f4v","ts":"2026-08-25T03:16:25Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

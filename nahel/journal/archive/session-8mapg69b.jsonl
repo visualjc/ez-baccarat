@@ -1,0 +1,2 @@
+{"id":"6nct70qk","ts":"2026-08-25T02:42:48Z","seq":0,"type":"note","actor":{"kind":"agent","id":"claude-code"},"item":"x31766d8","payload":{"summary":"assumption: tie pays 8:1 (the common EZ table) — some rooms pay 9:1; a config constant isolates it"}}
+{"id":"aj8m49wf","ts":"2026-08-25T02:42:48Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}
