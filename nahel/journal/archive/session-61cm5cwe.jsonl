@@ -1,0 +1,2 @@
+{"id":"g10wwc78","ts":"2026-08-25T18:06:36Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"0e9kwr0h","payload":{"target":"item","record":{"id":"0e9kwr0h","name":"hand-total-placement","type":"bug","status":"in-progress","lane":"direct","depends_on":[],"external_refs":[],"created":"2026-08-25T17:24:23Z","updated":"2026-08-25T18:06:36Z"},"body":""}}
+{"id":"89f0vymq","ts":"2026-08-25T18:06:36Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

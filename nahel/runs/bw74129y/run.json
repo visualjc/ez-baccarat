@@ -1,0 +1,13 @@
+{
+  "id": "bw74129y",
+  "item": "0e9kwr0h",
+  "actor": {
+    "kind": "agent",
+    "id": "codex"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T18:10:05Z",
+  "ended": "2026-08-25T18:15:06Z"
+}
