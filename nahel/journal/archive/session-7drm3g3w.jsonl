@@ -1,0 +1,2 @@
+{"id":"pdw6tyy3","ts":"2026-08-25T21:48:33Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"m1gajaze","payload":{"target":"item","record":{"id":"m1gajaze","name":"card-face-declutter","type":"feature","status":"done","lane":"direct","parent":"tsg7x111","depends_on":[],"external_refs":[],"created":"2026-08-25T17:24:23Z","updated":"2026-08-25T21:48:33Z"},"body":""}}
+{"id":"fjwf9gy3","ts":"2026-08-25T21:48:33Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

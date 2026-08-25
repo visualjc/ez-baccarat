@@ -1,0 +1,2 @@
+{"id":"363yw03y","ts":"2026-08-25T21:48:33Z","seq":0,"type":"item.created","actor":{"kind":"agent","id":"claude-code"},"item":"tsg7x111","payload":{"target":"item","record":{"id":"tsg7x111","name":"ui-polish-pass","type":"feature","status":"backlog","lane":"epic-lite","depends_on":[],"external_refs":[],"created":"2026-08-25T21:48:33Z","updated":"2026-08-25T21:48:33Z"},"body":""}}
+{"id":"k1h943wv","ts":"2026-08-25T21:48:33Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}

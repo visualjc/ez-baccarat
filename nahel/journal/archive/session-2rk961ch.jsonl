@@ -1,0 +1,2 @@
+{"id":"8a82cs7c","ts":"2026-08-25T21:48:33Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"03ctcktt","payload":{"target":"item","record":{"id":"03ctcktt","name":"tray-rhythm","type":"bug","status":"done","lane":"direct","parent":"tsg7x111","depends_on":[],"external_refs":[],"created":"2026-08-25T17:24:23Z","updated":"2026-08-25T21:48:33Z"},"body":""}}
+{"id":"ma3p5q5k","ts":"2026-08-25T21:48:33Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}
