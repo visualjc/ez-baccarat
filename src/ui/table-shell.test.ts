@@ -1,40 +1,58 @@
 import { expect, test } from "bun:test";
 
 const css = await Bun.file(new URL("../styles/app.css", import.meta.url)).text();
+const tokens = await Bun.file(new URL("../styles/tokens.css", import.meta.url)).text();
 
-test("the felt, its noise overlay and the burn scrim all inset by the rail width alone", () => {
-  // The three layers that must cover the felt exactly. If one of them ever
-  // picks up --felt-gutter along with #table-view's padding, it draws a bright
-  // ring inside the gold rim instead of sitting flush against it.
-  expect([...css.matchAll(/inset:\s*var\(--rail-w\)/g)]).toHaveLength(3);
-  expect(css).not.toMatch(/inset:\s*var\(--rail-w\)\s*\+/);
+/** The declaration block of one top-level rule, addressed by its exact selector. */
+function ruleBody(selector: string): string {
+  const start = css.indexOf(`${selector} {`);
+  if (start === -1) throw new Error(`missing rule: ${selector}`);
+  const open = css.indexOf("{", start);
+  const close = css.indexOf("}", open);
+  return css.slice(open + 1, close);
+}
+
+/** The layers that must cover the felt exactly, each bound to its own selector. */
+const FELT_LAYERS = ["#table-view::before", "#table-view::after", ".burn-scrim"];
+
+test("every felt layer insets by the rail width alone, never by the gutter", () => {
+  for (const selector of FELT_LAYERS) {
+    const body = ruleBody(selector);
+    expect(body).toMatch(/inset:\s*var\(--rail-w\);/);
+    expect(body).toMatch(/border-radius:\s*var\(--felt-radius\);/);
+  }
   expect(css).not.toMatch(/inset:\s*22px/);
-});
-
-test("only the table's own padding carries the gutter that keeps UI off the rim", () => {
-  expect(css).toMatch(/padding:\s*calc\(var\(--rail-w\) \+ var\(--felt-gutter\)\)/);
-  expect([...css.matchAll(/var\(--felt-gutter\)/g)].length).toBeGreaterThanOrEqual(1);
-});
-
-test("the felt radius is a token, not three copies of the same arithmetic", () => {
   expect(css).not.toMatch(/calc\(var\(--rail-radius\) - 10px\)/);
-  expect([...css.matchAll(/border-radius:\s*var\(--felt-radius\)/g)]).toHaveLength(3);
 });
 
-test("the gutter tightens at each breakpoint the table has to survive", async () => {
-  const tokens = await Bun.file(new URL("../styles/tokens.css", import.meta.url)).text();
+test("the gutter reaches the table's padding and nothing else", () => {
+  expect(ruleBody("#table-view")).toMatch(
+    /padding:\s*calc\(var\(--rail-w\) \+ var\(--felt-gutter\)\);/,
+  );
+
+  // A second consumer of the gutter is the regression this file exists to
+  // catch: any felt layer that grows by it draws a bright ring inside the rim.
+  const uses = [...css.matchAll(/var\(--felt-gutter\)/g)];
+  expect(uses).toHaveLength(1);
+});
+
+test("the gutter tightens at each breakpoint the table has to survive", () => {
   const base = tokens.match(/--felt-gutter:\s*(\d+)px/);
   expect(base).not.toBeNull();
 
-  const narrow = css.match(/max-width:\s*1239px\)\s*\{\s*:root\s*\{[^}]*--felt-gutter:\s*(\d+)px/);
-  const narrowest = css.match(/max-width:\s*859px\)\s*\{\s*:root\s*\{[^}]*--felt-gutter:\s*(\d+)px/);
-  expect(narrow).not.toBeNull();
-  expect(narrowest).not.toBeNull();
+  // Declarations, not var() uses — these re-token the gutter per breakpoint.
+  const overrides = [1239, 859].map((width) => {
+    const match = css.match(
+      new RegExp(`max-width:\\s*${width}px\\)\\s*\\{\\s*:root\\s*\\{[^}]*--felt-gutter:\\s*(\\d+)px`),
+    );
+    expect(match).not.toBeNull();
+    return Number(match![1]);
+  });
 
   // Horizontal gutter is felt the tray cannot spend, so it shrinks as the
   // window does rather than squeezing the controls.
-  const [wide, mid, tight] = [base![1]!, narrow![1]!, narrowest![1]!].map(Number);
-  expect(wide).toBeGreaterThan(mid);
-  expect(mid).toBeGreaterThan(tight);
-  expect(tight).toBeGreaterThan(0);
+  const [wide, mid, tight] = [Number(base![1]), ...overrides];
+  expect(wide).toBeGreaterThan(mid!);
+  expect(mid!).toBeGreaterThan(tight!);
+  expect(tight!).toBeGreaterThan(0);
 });
