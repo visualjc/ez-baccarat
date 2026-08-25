@@ -1,0 +1,14 @@
+---
+id: b0kaywxw
+name: ezb-tray-track-sizing
+created: 2026-08-25T21:54:33Z
+tags:
+  - ui
+  - css
+  - constraint
+sources:
+  - eahhh50c
+  - 0n6zm3r4
+  - dm5tdrvv
+---
+Layout constraint learned the hard way in #row-tray: an explicit minmax() minimum OVERRIDES the automatic min-content floor a bare 1fr would give, so a track can end up narrower than its own contents. That is what put 376px of action buttons in a 318px track; with justify-content flex-end the overflow spilled LEFT across the chip tray, hiding Clear under a chip at 1440 and pushing it off the felt at 1200. The fix that held was not retuned tracks but a wrapping flex row: it reflows exactly when the content stops fitting, at any width and any number of buttons, so no breakpoint has to predict the threshold. Chips take the slack with flex 1 1 auto and centre in it, landing left of the row midline. Related and still open: felt-column-overflow (0fh40zqc), where #row-bets min-content widens the whole column between 860 and 1240px.
