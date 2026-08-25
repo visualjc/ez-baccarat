@@ -1,0 +1,13 @@
+{
+  "id": "szn323a0",
+  "item": "m1gajaze",
+  "actor": {
+    "kind": "agent",
+    "id": "codex"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-25T18:03:20Z",
+  "ended": "2026-08-25T18:05:51Z"
+}

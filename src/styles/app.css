@@ -459,11 +459,15 @@ button:focus-visible {
   border: 1px solid var(--card-face-edge);
   color: var(--card-pip-black);
   display: grid;
+  /* One column, so the centre pip is centred on the card rather than on the
+     right two-thirds of a two-column grid. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas:
-    "top ."
-    ". center"
-    ". bottom";
-  padding: 10px;
+    "top"
+    "pip"
+    "bottom";
+  padding: calc(var(--card-w) * .085);
   transform: rotateY(180deg);
 }
 
@@ -478,29 +482,26 @@ button:focus-visible {
   border: 1px solid var(--card-back-rim);
 }
 
-.card-rank-top,
-.card-rank-bottom {
-  font-size: 18px;
+/* Type scales with the card so the narrow breakpoint's 76px card stays
+   legible instead of carrying desktop-sized glyphs. */
+.card-index {
+  display: grid;
+  justify-items: center;
+  line-height: .95;
   font-weight: 700;
-  line-height: 1;
 }
 
-.card-rank-top { grid-area: top; }
-.card-rank-bottom { grid-area: bottom; justify-self: end; align-self: end; transform: rotate(180deg); }
+.card-index-rank { font-size: calc(var(--card-w) * .2); }
+.card-index-suit { font-size: calc(var(--card-w) * .15); }
+
+.card-rank-top { grid-area: top; justify-self: start; }
+.card-rank-bottom { grid-area: bottom; justify-self: end; transform: rotate(180deg); }
+
 .card-suit {
-  grid-area: center;
-  justify-self: center;
-  align-self: center;
-  font-size: 34px;
-}
-
-.card-center {
-  grid-area: center;
-  justify-self: center;
-  align-self: end;
-  transform: translateY(18px);
-  font-size: 26px;
-  font-family: "Iowan Old Style", "Palatino Linotype", serif;
+  grid-area: pip;
+  place-self: center;
+  font-size: calc(var(--card-w) * .38);
+  line-height: 1;
 }
 
 .card.is-third {

@@ -1,5 +1,5 @@
 import type { Card } from "../engine/card";
-import { createCard } from "./card-el";
+import { createCard, spokenCard, suitOf } from "./card-el";
 
 export interface BurnRitualHandle {
   run(exposedCard: Card, burnCount: number): Promise<void>;
@@ -153,14 +153,18 @@ export function mountBurnRitual(
       cardHandle.flip();
       cardHandle.element.classList.add("focused");
 
-      const text = `BURN CARD · ${exposedCard.rank} · burning ${burnCount} ${burnCount === 1 ? "card" : "cards"}`;
+      const cardWord = burnCount === 1 ? "card" : "cards";
+      const text = `BURN CARD · ${exposedCard.rank}${suitOf(exposedCard)} · burning ${burnCount} ${cardWord}`;
+      // The face and the callout are both aria-hidden, so the live region
+      // carries the suit in words rather than as a glyph.
+      const spoken = `Burn card ${spokenCard(exposedCard)}, burning ${burnCount} ${cardWord}.`;
       const callout = document.createElement("p");
       callout.className = "burn-callout";
       // `announce` already routes this to the aria-live status region.
       callout.setAttribute("aria-hidden", "true");
       callout.textContent = text;
       stage.append(callout);
-      announce(text);
+      announce(spoken);
 
       await wait(schedule.hold);
 
