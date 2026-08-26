@@ -153,9 +153,16 @@ test("the stacked breakpoint gives up seating rather than seating against nothin
 
   const both = ruleBody(stacked, '.hand[data-seat="player"], .hand[data-seat="banker"]');
   expect(both).toMatch(/"label total pad"/);
+  // The tracks matter as much as the areas: leave the player's wide
+  // minmax(0, 1fr) auto auto in place and the header still hugs the right rim
+  // no matter which areas are named over it.
+  expect(both).toMatch(/grid-template-columns:\s*auto auto minmax\(0, 1fr\);/);
 
   expect(ruleBody(stacked, '.hand[data-seat="player"] .hand-cards')).toMatch(
     /flex-direction:\s*row;/,
+  );
+  expect(ruleBody(stacked, '.hand[data-seat="player"] .hand-rule')).toMatch(
+    /text-align:\s*left;/,
   );
 
   // Dealt forward again, the player's third card is the rightmost item, so it
