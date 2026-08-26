@@ -103,6 +103,11 @@ test("the player half is seated inboard and its card row runs outward", () => {
   expect(ruleBody(css, '.hand[data-seat="player"] .hand-cards')).toMatch(
     /flex-direction:\s*row-reverse;/,
   );
+  // The third-card narration follows the half it belongs to; left alone it
+  // reads from the felt's rim while everything above it sits by the divider.
+  expect(ruleBody(css, '.hand[data-seat="player"] .hand-rule')).toMatch(
+    /text-align:\s*right;/,
+  );
 });
 
 test("the banker half puts its total inboard too, so the two pills flank the divider", () => {
@@ -141,6 +146,11 @@ test("each seat's third-card rotation is a variable the emphasis pulse reads bac
   // the whole pulse, and only one of the three stops would look wrong.
   expect(ruleBody(css, ".card.is-third")).toMatch(
     /--third-transform:\s*rotate\(90deg\) translate\(6px, -4px\);/,
+  );
+  // Writing the angle here instead of reading the variable would silently
+  // un-mirror the player: the seat override sets the variable, not transform.
+  expect(ruleBody(css, ".card.is-third")).toMatch(
+    /transform:\s*var\(--third-transform\);/,
   );
   expect(ruleBody(css, '.hand[data-seat="player"] .card.is-third')).toMatch(
     /--third-transform:\s*rotate\(-90deg\) translate\(-6px, -4px\);/,
