@@ -47,6 +47,19 @@ function keyframesBody(name: string): string {
   throw new Error(`unterminated keyframes: ${name}`);
 }
 
+/**
+ * The COMPLETE grid-template-areas declaration for one hand, header row first.
+ * Asserting only the header row leaves the cards and rule areas undefined —
+ * they fall back to implicit placement and stop spanning the row.
+ */
+function expectHandAreas(body: string, headerRow: string): void {
+  expect(body).toMatch(
+    new RegExp(
+      `grid-template-areas:\\s*"${headerRow}"\\s*"cards cards cards"\\s*"rule\\s+rule\\s+rule";`,
+    ),
+  );
+}
+
 const { dividerWidth, gap } = HAND_ROW_TRACKS;
 
 test("both seats stand the same distance off the centre line, at every width", () => {
@@ -85,7 +98,7 @@ test("the player half is seated inboard and its card row runs outward", () => {
   // The pad track is what pushes the header pair against the divider; without
   // it the label and total fall back to the felt's left rim.
   expect(seat).toMatch(/grid-template-columns:\s*minmax\(0, 1fr\) auto auto;/);
-  expect(seat).toMatch(/"pad\s+label total"/);
+  expectHandAreas(seat, "pad\\s+label total");
 
   expect(ruleBody(css, '.hand[data-seat="player"] .hand-cards')).toMatch(
     /flex-direction:\s*row-reverse;/,
@@ -95,7 +108,7 @@ test("the player half is seated inboard and its card row runs outward", () => {
 test("the banker half puts its total inboard too, so the two pills flank the divider", () => {
   const seat = ruleBody(css, '.hand[data-seat="banker"]');
   expect(seat).toMatch(/grid-template-columns:\s*auto auto minmax\(0, 1fr\);/);
-  expect(seat).toMatch(/"total label pad"/);
+  expectHandAreas(seat, "total label pad");
 });
 
 test("the sideways card is displaced inboard, not given reserved width", () => {
@@ -152,7 +165,7 @@ test("the stacked breakpoint gives up seating rather than seating against nothin
   expect(ruleBody(stacked, ".hand-divider")).toMatch(/display:\s*none;/);
 
   const both = ruleBody(stacked, '.hand[data-seat="player"], .hand[data-seat="banker"]');
-  expect(both).toMatch(/"label total pad"/);
+  expectHandAreas(both, "label total pad");
   // The tracks matter as much as the areas: leave the player's wide
   // minmax(0, 1fr) auto auto in place and the header still hugs the right rim
   // no matter which areas are named over it.
