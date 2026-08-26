@@ -41,10 +41,15 @@
   100% { opacity: 1; box-shadow: var(--shadow-card); transform: translate(0) rotate(0deg) scale(1); }
 }
 
+/* Every stop re-states the seat's own rotation through --third-transform:
+   deal-slide runs concurrently on the same card and its transform would
+   otherwise flatten the card upright for the whole pulse. Reading the angle
+   from the variable rather than writing it out is what keeps this in step
+   with .card.is-third when a seat mirrors it. */
 @keyframes third-card-emphasis {
-  0% { outline-color: transparent; transform: rotate(90deg) translate(6px, -4px) scale(1); }
-  25%, 67% { outline-color: var(--gold); transform: rotate(90deg) translate(6px, -4px) scale(1.12); }
-  100% { outline-color: var(--gold); transform: rotate(90deg) translate(6px, -4px) scale(1); }
+  0% { outline-color: transparent; transform: var(--third-transform) scale(1); }
+  25%, 67% { outline-color: var(--gold); transform: var(--third-transform) scale(1.12); }
+  100% { outline-color: var(--gold); transform: var(--third-transform) scale(1); }
 }
 
 @keyframes chip-place {

@@ -1,0 +1,27 @@
+---
+id: ct1jw6wq
+name: decision-ymggceax
+created: 2026-08-26T22:29:21Z
+tags:
+  - decision
+  - task
+sources:
+  - d00n9tq2
+  - kmg37qaf
+  - wnt54crz
+---
+A pure offsets helper plus a ruleBody() CSS guard that covers four things: the track topology, the player's alignment and reversal, the banker's header order, and per-seat transform equality against EVERY third-card-emphasis stop.
+
+Decided by resolving task ticket ymggceax, charting: Both hands are seated against the centre line the way a live EZ Baccarat layout is dealt: each seat's two-card group holds its INNER edge the same measured distance off the divider, each seat's total rides beside the divider instead of at the felt's outer edge, and each sideways third card lies OUTBOARD of its own group — the player's to its left, per the casino reference photo. A fresh agent can tell it has arrived by measuring: player inner edge to centre line equals banker inner edge to centre line, and both totals are nearer the divider than the felt's rim.
+
+Question:
+What proves this geometry in CI — which seam is pure and unit-testable, and what exactly does the CSS-text guard assert so it would fail on the regression it exists to catch?
+
+Rationale:
+The seam is a pure function over the row's track sizes returning each seat's inner-edge offset and the centre line, with the test asserting the two offsets agree rather than asserting 90. The guard follows the house pattern already in src/ui/table-shell.test.ts, whose ruleBody(selector) extracts one rule's declaration block so a test fails on the rule it names rather than on any string anywhere in the stylesheet.
+
+What the grill changed. Claude drafted the guard as alignment plus reversal plus 'the transform matches the keyframes'. Codex called that too narrow in a specific, checkable way: matching ONE keyframe stop passes a mutation of the other two, and third-card-emphasis has three stops (0%, the 25%/67% pair, and 100%) each restating the transform independently. So the assertion is equality against every stop. Codex also folded in qgy433dn's topology guard, so the arithmetic is not proving symmetry from an assumption nobody checks.
+
+The mutation test this has to survive, and which will be run rather than assumed: flip the player rule back to left alignment, drop the row-reverse, swap the banker's areas back, and change one keyframe stop's transform — each mutation alone must turn the suite red.
+
+What would overturn this: moving the emphasis animation off transform entirely (an outline-only pulse, say), which would delete the pairing the guard exists to hold.

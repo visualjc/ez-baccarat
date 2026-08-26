@@ -327,9 +327,9 @@ button:focus-visible {
 
 #row-hands {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 132px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) var(--hand-divider-w) minmax(0, 1fr);
   align-items: stretch;
-  gap: 24px;
+  gap: var(--hand-row-gap);
 }
 
 .hand {
@@ -337,13 +337,29 @@ button:focus-visible {
   display: grid;
   /* The total shares the label's line: the card lane is the one place it
      cannot go without covering a card at some point in the round. */
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas:
-    "label total"
-    "cards cards"
-    "rule  rule";
   align-content: start;
   gap: 14px;
+}
+
+/* Each seat is seated against the centre line, and the seating is stated per
+   seat rather than left to column order: the banker only LOOKS seated today
+   because it happens to be the third track with the divider on its left. The
+   pad column is what pushes each header pair inboard, so the two totals flank
+   the divider instead of drifting to the felt's rims. */
+.hand[data-seat="player"] {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    "pad   label total"
+    "cards cards cards"
+    "rule  rule  rule";
+}
+
+.hand[data-seat="banker"] {
+  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "total label pad"
+    "cards cards cards"
+    "rule  rule  rule";
 }
 
 .hand-label {
@@ -369,14 +385,21 @@ button:focus-visible {
 .hand-cards {
   grid-area: cards;
   display: flex;
-  gap: 12px;
+  gap: var(--hand-card-gap);
   min-height: var(--card-h);
   align-items: center;
 }
 
+/* row-reverse packs from the right AND deals the third card — always appended
+   last — to the far left, outboard of the pair, the way a live layout lies.
+   The DOM order in hand-zone.ts is untouched, so a screen reader still reads
+   the cards in the order they were dealt. */
+.hand[data-seat="player"] .hand-cards {
+  flex-direction: row-reverse;
+}
+
 .hand-total {
   grid-area: total;
-  justify-self: start;
   width: 48px;
   height: 34px;
   border-radius: 999px;
@@ -386,6 +409,10 @@ button:focus-visible {
   font-size: 20px;
   font-weight: 700;
   background: rgba(8, 48, 31, .7);
+}
+
+.hand[data-seat="player"] .hand-rule {
+  text-align: right;
 }
 
 .hand-rule {
@@ -507,10 +534,42 @@ button:focus-visible {
   line-height: 1;
 }
 
+/* rotate() leaves the layout box at card WIDTH while the card paints card
+   HEIGHT across, so half the difference hangs off each side. The sideways card
+   is the OUTBOARD item in its lane, so the outboard half hangs past the felt's
+   gutter and onto the wood rail, and the inboard half sits on its neighbour.
+   Fixed by shifting the card inboard by exactly that overhang — a positive
+   outboard margin against a negative inboard one, which nets to zero layout
+   width. Reserving the overhang instead of displacing it costs the lane its
+   whole budget and flex-shrinks every card in the hand the moment a third card
+   lands. What is left is an 8px overlap onto the pair, which is what a live
+   layout looks like.
+   The transform lives in a custom property because third-card-emphasis has to
+   re-state it at every stop — deal-slide runs concurrently and would otherwise
+   flatten the rotation — and one variable is the only way that pairing cannot
+   drift. */
 .card.is-third {
-  transform: rotate(90deg) translate(6px, -4px);
+  --third-transform: rotate(90deg) translate(6px, -4px);
+  --third-overhang: calc((var(--card-h) - var(--card-w)) / 2);
+  transform: var(--third-transform);
   transform-origin: center;
 }
+
+/* Outboard is the side away from the divider: the banker deals rightward, so
+   its third card's outboard edge is its right, and the player's is mirrored. */
+.hand[data-seat="banker"] .card.is-third {
+  margin-inline-start: calc(-1 * var(--third-overhang));
+  margin-inline-end: var(--third-overhang);
+}
+
+.hand[data-seat="player"] .card.is-third {
+  /* Its pair sits to the right, so its rotation mirrors the banker's:
+     M·R(90)·T(6,-4)·M = R(-90)·T(-6,-4). */
+  --third-transform: rotate(-90deg) translate(-6px, -4px);
+  margin-inline-start: var(--third-overhang);
+  margin-inline-end: calc(-1 * var(--third-overhang));
+}
+
 
 .card.is-third-emphasis {
   outline: 3px solid var(--gold);
@@ -1044,6 +1103,35 @@ button:focus-visible {
 
   .hand-divider {
     display: none;
+  }
+
+  /* The hands stack and the divider goes away, so there is no centre line left
+     to seat against. Seating the two halves against one anyway would throw the
+     player to the row's right rim and the banker to its left — the opposite of
+     the layout it exists to make. Both seats fall back to the single
+     flush-left shape they shared before the row had sides. */
+  .hand[data-seat="player"], .hand[data-seat="banker"] {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      "label total pad"
+      "cards cards cards"
+      "rule  rule  rule";
+  }
+
+  .hand[data-seat="player"] .hand-cards {
+    flex-direction: row;
+  }
+
+  .hand[data-seat="player"] .hand-rule {
+    text-align: left;
+  }
+
+  /* Dealt forward again, so the player's third card is the RIGHTMOST item:
+     same outboard side, same rotation and displacement, as the banker's. */
+  .hand[data-seat="player"] .card.is-third {
+    --third-transform: rotate(90deg) translate(6px, -4px);
+    margin-inline-start: calc(-1 * var(--third-overhang));
+    margin-inline-end: var(--third-overhang);
   }
 
   #row-bets {
