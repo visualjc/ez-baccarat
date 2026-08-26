@@ -6,6 +6,22 @@ const css = await Bun.file(new URL("../styles/app.css", import.meta.url)).text()
 const anim = await Bun.file(new URL("../styles/anim.css", import.meta.url)).text();
 const tokens = await Bun.file(new URL("../styles/tokens.css", import.meta.url)).text();
 
+/** The body of one @media block, braces balanced past the rules inside it. */
+function mediaBlock(query: string): string {
+  const start = css.indexOf(`@media ${query} {`);
+  if (start === -1) throw new Error(`missing media block: ${query}`);
+  const open = css.indexOf("{", start);
+  let depth = 0;
+  for (let i = open; i < css.length; i += 1) {
+    if (css[i] === "{") depth += 1;
+    if (css[i] === "}") {
+      depth -= 1;
+      if (depth === 0) return css.slice(open + 1, i);
+    }
+  }
+  throw new Error(`unterminated media block: ${query}`);
+}
+
 /** The declaration block of one top-level rule, addressed by its exact selector. */
 function ruleBody(source: string, selector: string): string {
   const start = source.indexOf(`${selector} {`);
@@ -125,4 +141,27 @@ test("each seat's third-card rotation is a variable the emphasis pulse reads bac
     expect(stop).toMatch(/transform:\s*var\(--third-transform\)/);
   }
   expect(keyframesBody("third-card-emphasis")).not.toMatch(/rotate\(/);
+});
+
+test("the stacked breakpoint gives up seating rather than seating against nothing", () => {
+  // Below 860px #row-hands collapses to one column and .hand-divider is hidden.
+  // Left alone, the player rule would throw its half to the row's RIGHT rim and
+  // the banker's to its LEFT — the exact inverse of the layout they exist for.
+  const stacked = mediaBlock("(max-width: 859px)");
+  expect(ruleBody(stacked, "#row-hands")).toMatch(/grid-template-columns:\s*1fr;/);
+  expect(ruleBody(stacked, ".hand-divider")).toMatch(/display:\s*none;/);
+
+  const both = ruleBody(stacked, '.hand[data-seat="player"], .hand[data-seat="banker"]');
+  expect(both).toMatch(/"label total pad"/);
+
+  expect(ruleBody(stacked, '.hand[data-seat="player"] .hand-cards')).toMatch(
+    /flex-direction:\s*row;/,
+  );
+
+  // Dealt forward again, the player's third card is the rightmost item, so it
+  // takes the banker's rotation and the banker's displacement.
+  const third = ruleBody(stacked, '.hand[data-seat="player"] .card.is-third');
+  expect(third).toMatch(/--third-transform:\s*rotate\(90deg\) translate\(6px, -4px\);/);
+  expect(third).toMatch(/margin-inline-start:\s*calc\(-1 \* var\(--third-overhang\)\);/);
+  expect(third).toMatch(/margin-inline-end:\s*var\(--third-overhang\);/);
 });

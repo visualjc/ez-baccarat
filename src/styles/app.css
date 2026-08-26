@@ -1105,6 +1105,35 @@ button:focus-visible {
     display: none;
   }
 
+  /* The hands stack and the divider goes away, so there is no centre line left
+     to seat against. Seating the two halves against one anyway would throw the
+     player to the row's right rim and the banker to its left — the opposite of
+     the layout it exists to make. Both seats fall back to the single
+     flush-left shape they shared before the row had sides. */
+  .hand[data-seat="player"], .hand[data-seat="banker"] {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      "label total pad"
+      "cards cards cards"
+      "rule  rule  rule";
+  }
+
+  .hand[data-seat="player"] .hand-cards {
+    flex-direction: row;
+  }
+
+  .hand[data-seat="player"] .hand-rule {
+    text-align: left;
+  }
+
+  /* Dealt forward again, so the player's third card is the RIGHTMOST item:
+     same outboard side, same rotation and displacement, as the banker's. */
+  .hand[data-seat="player"] .card.is-third {
+    --third-transform: rotate(90deg) translate(6px, -4px);
+    margin-inline-start: calc(-1 * var(--third-overhang));
+    margin-inline-end: var(--third-overhang);
+  }
+
   #row-bets {
     grid-template-columns: repeat(5, minmax(112px, 1fr));
     gap: 12px;
