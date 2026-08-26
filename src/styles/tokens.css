@@ -86,6 +86,14 @@
   --header-h:         56px;
   --tray-gap:         18px;
 
+  /* The hand row's centre tracks. The stand-off between a seat's cards and
+     the painted centre line is gap + half the divider, so these two numbers
+     are the whole of it — see src/ui/hand-layout.ts, which states the same
+     arithmetic and is guarded against these declarations. */
+  --hand-divider-w:   132px;
+  --hand-row-gap:     24px;
+  --hand-card-gap:    12px;
+
   /* The wood rail's thickness (the felt's inset) and the breathing room
      between the felt's gold rim and the nearest UI element are two different
      ideas; keeping them separate is what gives the table its gutter. */

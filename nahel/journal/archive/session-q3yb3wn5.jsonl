@@ -1,0 +1,2 @@
+{"id":"s51544ky","ts":"2026-08-26T22:31:15Z","seq":0,"type":"item.updated","actor":{"kind":"agent","id":"claude-code"},"item":"ahs5jhv9","payload":{"target":"item","record":{"id":"ahs5jhv9","name":"hand-geometry","type":"feature","status":"in-progress","lane":"direct","depends_on":[],"external_refs":[],"created":"2026-08-26T22:20:04Z","updated":"2026-08-26T22:31:15Z"},"body":""}}
+{"id":"p6s5rndp","ts":"2026-08-26T22:31:15Z","seq":1,"type":"session.closed","actor":{"kind":"agent","id":"claude-code"},"payload":{}}
