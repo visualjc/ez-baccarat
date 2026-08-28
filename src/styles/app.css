@@ -745,6 +745,30 @@ button:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
+.bankroll-reload {
+  width: max-content;
+  max-width: 100%;
+  margin-top: 2px;
+  padding: 7px 10px;
+  border: 1px solid rgba(249, 222, 151, .28);
+  border-radius: 8px;
+  background: var(--gold-glass);
+  color: var(--gold-hi);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.bankroll-reload:hover {
+  border-color: var(--gold);
+}
+
+.bankroll-reload:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
 .chip-tray {
   display: flex;
   justify-content: center;

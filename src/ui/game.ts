@@ -19,6 +19,7 @@ export interface GameHandle {
   rebet(): void;
   doubleBets(): void;
   removeLastBet(): void;
+  requestPlayChips(): boolean;
   destroy(): void;
 }
 
@@ -63,6 +64,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     bus,
     announce: shell.announce,
     onWagersChanged: () => syncControls(),
+    onPlayChipsRequested: () => { gameHandle.requestPlayChips(); },
   });
   const panel = mountCountPanel(shell.panelSlot, bus);
 
@@ -87,6 +89,7 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
     table.controls.doubleButton.disabled = state.busy || !doublePlan.ok;
     table.betLayout.lock(state.busy);
     table.chipTray.setLocked(state.busy);
+    table.bankroll.setReloadLocked(state.busy);
     shell.controls.newShoe.disabled = state.busy;
   };
 
@@ -320,6 +323,17 @@ export function mountGame(deps: GameDeps = {}): GameHandle {
         shell.announce(`Removed one chip from ${kind}.`);
         syncControls();
       }
+    },
+    requestPlayChips() {
+      if (state.busy || !table.bankroll.requestReload()) {
+        return false;
+      }
+
+      const bankroll = table.bankroll.get();
+      bus.emit({ type: "bankroll:changed", bankroll, delta: bankroll });
+      syncControls();
+      shell.announce("Added $1,000 in play chips.");
+      return true;
     },
     destroy() {
       keyboard.detach();
