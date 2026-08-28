@@ -57,7 +57,9 @@ export function mountBankroll(host: HTMLElement, deps: BankrollDeps = {}): Bankr
   reloadButton.textContent = "Add $1,000 play chips";
   reloadButton.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
       event.stopPropagation();
+      deps.onReloadRequested?.();
     }
   });
   reloadButton.addEventListener("click", () => deps.onReloadRequested?.());

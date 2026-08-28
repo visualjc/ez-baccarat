@@ -179,7 +179,7 @@ describe("bankroll play-chip reload", () => {
     expect(writes).toEqual([["ezbac.bankroll", "1000"]]);
   });
 
-  test("Enter and Space on the focused action grant once without global Deal or Fast", () => {
+  test("Enter and Space keydown reload once without global Deal or a synthetic click", () => {
     for (const key of ["Enter", " "]) {
       stored.set("ezbac.bankroll", "0");
       writes.length = 0;
@@ -226,11 +226,13 @@ describe("bankroll play-chip reload", () => {
       if (!stopped) {
         for (const listener of documentListeners.get("keydown") ?? []) listener(event);
       }
-      if (!prevented) button.dispatch("click");
 
+      expect(prevented).toBe(true);
+      expect(stopped).toBe(true);
       expect(requestCount).toBe(1);
       expect(dealCount).toBe(0);
       expect(bankroll.get()).toBe(1000);
+      expect(button.hidden).toBe(true);
       expect(writes).toEqual([["ezbac.bankroll", "1000"]]);
       keyboard.detach();
     }
