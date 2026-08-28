@@ -1,0 +1,64 @@
+name: supervised-development
+description: One-writer supervised development with durable candidate evidence
+  and parallel candidate gates.
+steps:
+  - id: intake
+    roles:
+      - supervisor
+    guidance: Bind exactly one brief containing the user request or the prior round
+      approved plan, candidate, and accepted findings. Bind brief. This role
+      coordinates and may mutate Nahel state but must not edit protected project
+      files.
+  - id: discover
+    roles:
+      - context-gatherer
+      - repo-knowledge
+    guidance: Run both roles concurrently from {{bindings.brief}}. They are
+      read-only. Store both role outputs and bind context and repo-knowledge
+      summaries for planning.
+  - id: plan
+    roles:
+      - planner
+    guidance: Produce owned files, ordered test-first slices, risks, focused and
+      negative checks, full verification, and driving evidence from
+      {{bindings.brief}}, {{bindings.context}}, and {{bindings.repo-knowledge}}.
+      Store the planner output and bind plan.
+  - id: approve-plan
+    roles:
+      - supervisor
+    guidance: Check {{bindings.plan}} against user intent, PRODUCT.md, CONTEXT.md,
+      locked roadmap decisions, ADRs, and scope. Bind approved-plan only when it
+      is safe and complete; otherwise end the run honestly.
+  - id: implement
+    roles:
+      - developer
+    guidance: The sole writer implements {{bindings.approved-plan}} test-first,
+      drives the changed flow, commits every protected change, confirms clean
+      protected paths, and stores its implementation report and driving
+      transcript. Bind candidate to the exact commit SHA, implementation to the
+      report, and transcript to the driving evidence. Never fall back to
+      supervisor or self execution; if unavailable, park unless the user
+      supplied the exact valid bypass.
+  - id: candidate-gate
+    roles:
+      - qa-tester
+      - reviewer
+    guidance: Run both roles concurrently against exact candidate
+      {{bindings.candidate}}, approved plan {{bindings.approved-plan}}, and
+      transcript {{bindings.transcript}}. Confirm HEAD stays unchanged. QA runs
+      focused and negative checks first, then full bun test, Nahel validate, and
+      doctor only after they pass. Reviewer checks correctness, regressions,
+      scope, tests, and evidence. Store both role outputs and bind qa-report and
+      review-report.
+  - id: adjudicate
+    roles:
+      - supervisor
+    guidance: Using candidate {{bindings.candidate}}, QA {{bindings.qa-report}}, and
+      review {{bindings.review-report}}, bind verdict to ship, fix, or park and
+      bind accepted-findings. Ship only when HEAD is unchanged, all roles are
+      ok, focused and negative checks and full bun test pass, Nahel validate and
+      doctor pass, and driving evidence was reviewed. Fix ends this run honestly
+      and starts a fresh supervised-development run with prior plan, candidate,
+      and accepted findings as intake. Reuse the developer thread when
+      available; resume from stored artifacts after a crash. Park after three
+      failed candidates.

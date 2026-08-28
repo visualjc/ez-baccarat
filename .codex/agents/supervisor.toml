@@ -1,0 +1,7 @@
+# Managed by nahel install. Delete this file to opt out; do not edit it.
+name = "supervisor"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"
+description = "Read-only supervised-development role: follow its authority boundary and store a durable report."
+developer_instructions = "Stay read-only. Keep HEAD unchanged and store the required durable output."
