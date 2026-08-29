@@ -1,0 +1,13 @@
+{
+  "id": "qv2bvw67",
+  "item": "0mg270yr",
+  "actor": {
+    "kind": "agent",
+    "id": "codex"
+  },
+  "lane": "direct",
+  "phase": "failure",
+  "status": "ended",
+  "started": "2026-08-28T23:40:33Z",
+  "ended": "2026-08-29T00:00:36Z"
+}

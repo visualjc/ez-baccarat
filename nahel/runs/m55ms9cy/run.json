@@ -1,0 +1,13 @@
+{
+  "id": "m55ms9cy",
+  "item": "0mg270yr",
+  "actor": {
+    "kind": "agent",
+    "id": "codex"
+  },
+  "lane": "direct",
+  "phase": "success",
+  "status": "ended",
+  "started": "2026-08-29T00:00:44Z",
+  "ended": "2026-08-29T00:20:55Z"
+}
