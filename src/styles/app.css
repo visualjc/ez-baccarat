@@ -1139,6 +1139,7 @@ button:focus-visible {
   }
 
   #table-view {
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 88px minmax(180px, 1fr) 184px minmax(92px, auto);
   }
 

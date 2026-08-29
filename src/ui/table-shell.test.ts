@@ -84,6 +84,10 @@ test("the narrow layout contains the header, tray, and wrapping bankroll action"
   );
   expect(nestedRuleBody(narrow, ".header-controls")).toMatch(/flex-wrap:\s*wrap;/);
 
+  expect(nestedRuleBody(narrow, "#table-view")).toMatch(
+    /grid-template-columns:\s*minmax\(0,\s*1fr\);/,
+  );
+
   expect(nestedRuleBody(narrow, "#row-tray")).toMatch(/min-width:\s*0;/);
   const bankrollContainment = nestedRuleBody(narrow, ".tray-bankroll, .bankroll");
   expect(bankrollContainment).toMatch(/min-width:\s*0;/);
