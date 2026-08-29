@@ -82,6 +82,7 @@ describe("QA bankroll probe", () => {
       append(...children: FakeElement[]) {
         this.children.push(...children);
       }
+      addEventListener() {}
     }
 
     const oldWindow = Object.getOwnPropertyDescriptor(globalThis, "window");

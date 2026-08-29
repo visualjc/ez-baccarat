@@ -745,6 +745,30 @@ button:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
+.bankroll-reload {
+  width: max-content;
+  max-width: 100%;
+  margin-top: 2px;
+  padding: 7px 10px;
+  border: 1px solid rgba(249, 222, 151, .28);
+  border-radius: 8px;
+  background: var(--gold-glass);
+  color: var(--gold-hi);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.bankroll-reload:hover {
+  border-color: var(--gold);
+}
+
+.bankroll-reload:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
 .chip-tray {
   display: flex;
   justify-content: center;
@@ -1081,6 +1105,28 @@ button:focus-visible {
     --felt-gutter: 10px;
   }
 
+  #app {
+    grid-template-rows: auto minmax(0, 1fr) 28px;
+  }
+
+  #app-header {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 8px 10px;
+    padding: 8px 10px;
+  }
+
+  .shoe-meter {
+    min-width: 0;
+  }
+
+  .header-controls {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
   #app-main {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;
@@ -1093,6 +1139,7 @@ button:focus-visible {
   }
 
   #table-view {
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 88px minmax(180px, 1fr) 184px minmax(92px, auto);
   }
 
@@ -1146,6 +1193,20 @@ button:focus-visible {
   #row-tray {
     flex-direction: column;
     align-items: stretch;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .tray-bankroll, .bankroll {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .bankroll-reload {
+    width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .tray-actions {

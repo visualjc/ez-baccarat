@@ -19,6 +19,7 @@ interface TableViewDeps {
   bus: GameBus;
   announce(text: string): void;
   onWagersChanged?: () => void;
+  onPlayChipsRequested?: () => void;
 }
 
 export interface TableViewHandle {
@@ -135,7 +136,9 @@ export function mountTableView(host: HTMLElement, deps: TableViewDeps): TableVie
   const actionHost = document.createElement("div");
   actionHost.className = "tray-actions";
 
-  const bankroll = mountBankroll(bankrollHost);
+  const bankroll = mountBankroll(bankrollHost, {
+    onReloadRequested: deps.onPlayChipsRequested,
+  });
   const chipTray = mountChipTray(chipHost);
   const controls = mountControls(actionHost);
   const betLayout = mountBetLayout(betHost, {

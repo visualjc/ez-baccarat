@@ -6,10 +6,15 @@ export interface BankrollHandle {
   element: HTMLElement;
   get(): number;
   apply(delta: number): number;
-  reset(): void;
+  requestReload(): boolean;
+  setReloadLocked(locked: boolean): void;
 }
 
 const STORAGE_KEY = "ezbac.bankroll";
+
+interface BankrollDeps {
+  onReloadRequested?: () => void;
+}
 
 function animateValue(from: number, to: number, el: HTMLElement, formatter: (value: number) => string) {
   const diff = to - from;
@@ -35,7 +40,7 @@ function animateValue(from: number, to: number, el: HTMLElement, formatter: (val
   requestAnimationFrame(frame);
 }
 
-export function mountBankroll(host: HTMLElement): BankrollHandle {
+export function mountBankroll(host: HTMLElement, deps: BankrollDeps = {}): BankrollHandle {
   const wrapper = document.createElement("div");
   wrapper.className = "bankroll";
 
@@ -46,13 +51,33 @@ export function mountBankroll(host: HTMLElement): BankrollHandle {
   const value = document.createElement("span");
   value.className = "value";
 
-  wrapper.append(label, value);
+  const reloadButton = document.createElement("button");
+  reloadButton.type = "button";
+  reloadButton.className = "bankroll-reload";
+  reloadButton.textContent = "Add $1,000 play chips";
+  reloadButton.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      event.stopPropagation();
+      deps.onReloadRequested?.();
+    }
+  });
+  reloadButton.addEventListener("click", () => deps.onReloadRequested?.());
+
+  wrapper.append(label, value, reloadButton);
   host.append(wrapper);
 
   const fromStorage = Number.parseInt(readStoredItem(STORAGE_KEY) ?? "", 10);
   const safe = Number.isFinite(fromStorage) ? fromStorage : DEFAULT_BANKROLL;
   let bankroll = Math.max(0, safe);
+  let reloadLocked = false;
   value.textContent = formatCurrency(bankroll);
+
+  const syncReload = () => {
+    reloadButton.hidden = bankroll !== 0 || reloadLocked;
+    reloadButton.disabled = bankroll !== 0 || reloadLocked;
+  };
+  syncReload();
 
   const persist = (next: number) => {
     try {
@@ -71,16 +96,26 @@ export function mountBankroll(host: HTMLElement): BankrollHandle {
       const next = applyBankrollDelta(bankroll, delta);
       animateValue(bankroll, next, value, formatCurrency);
       bankroll = next;
+      syncReload();
       value.classList.remove("anim-total-tick");
       void value.offsetWidth;
       value.classList.add("anim-total-tick");
       persist(bankroll);
       return bankroll;
     },
-    reset() {
+    requestReload() {
+      if (bankroll !== 0 || reloadLocked) {
+        return false;
+      }
       bankroll = DEFAULT_BANKROLL;
       value.textContent = formatCurrency(bankroll);
+      syncReload();
       persist(bankroll);
+      return true;
+    },
+    setReloadLocked(locked) {
+      reloadLocked = locked;
+      syncReload();
     },
   };
 }

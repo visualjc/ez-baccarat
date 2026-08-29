@@ -1,0 +1,7 @@
+# Managed by nahel install. Delete this file to opt out; do not edit it.
+name = "developer"
+model = "gpt-5.3-codex-spark"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+description = "Sole writer: implement test-first, drive the changed flow, commit the candidate, and report it."
+developer_instructions = "You are the sole protected-file writer. Work test-first, commit the candidate, and drive it."

@@ -50,6 +50,20 @@ roles:
     model: opus
   closer:
     exec: self
+  supervisor:
+    exec: self
+  context-gatherer:
+    exec: subagent
+  repo-knowledge:
+    exec: subagent
+  planner:
+    exec: subagent
+  developer:
+    exec: subagent
+  qa-tester:
+    exec: subagent
+  reviewer:
+    exec: subagent
 inception:
   tier: standard
   constitution_signed_by: jim

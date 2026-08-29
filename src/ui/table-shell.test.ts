@@ -12,6 +12,19 @@ function ruleBody(selector: string): string {
   return css.slice(open + 1, close);
 }
 
+function nestedRuleBody(source: string, selector: string): string {
+  const start = source.indexOf(`${selector} {`);
+  if (start === -1) throw new Error(`missing rule: ${selector}`);
+  const open = source.indexOf("{", start);
+  let depth = 1;
+  for (let index = open + 1; index < source.length; index += 1) {
+    if (source[index] === "{") depth += 1;
+    if (source[index] === "}") depth -= 1;
+    if (depth === 0) return source.slice(open + 1, index);
+  }
+  throw new Error(`unterminated rule: ${selector}`);
+}
+
 /** The layers that must cover the felt exactly, each bound to its own selector. */
 const FELT_LAYERS = ["#table-view::before", "#table-view::after", ".burn-scrim"];
 
@@ -55,4 +68,33 @@ test("the gutter tightens at each breakpoint the table has to survive", () => {
   expect(wide).toBeGreaterThan(mid!);
   expect(mid!).toBeGreaterThan(tight!);
   expect(tight!).toBeGreaterThan(0);
+});
+
+test("the narrow layout contains the header, tray, and wrapping bankroll action", () => {
+  const narrow = nestedRuleBody(css, "@media (max-width: 859px)");
+
+  expect(nestedRuleBody(narrow, "#app")).toMatch(
+    /grid-template-rows:\s*auto minmax\(0,\s*1fr\) 28px;/,
+  );
+  expect(nestedRuleBody(narrow, "#app-header")).toMatch(
+    /grid-template-columns:\s*auto minmax\(0,\s*1fr\);/,
+  );
+  expect(nestedRuleBody(narrow, "#app-header")).toMatch(
+    /grid-template-rows:\s*auto auto;/,
+  );
+  expect(nestedRuleBody(narrow, ".header-controls")).toMatch(/flex-wrap:\s*wrap;/);
+
+  expect(nestedRuleBody(narrow, "#table-view")).toMatch(
+    /grid-template-columns:\s*minmax\(0,\s*1fr\);/,
+  );
+
+  expect(nestedRuleBody(narrow, "#row-tray")).toMatch(/min-width:\s*0;/);
+  const bankrollContainment = nestedRuleBody(narrow, ".tray-bankroll, .bankroll");
+  expect(bankrollContainment).toMatch(/min-width:\s*0;/);
+  expect(bankrollContainment).toMatch(/max-width:\s*100%;/);
+
+  const reload = nestedRuleBody(narrow, ".bankroll-reload");
+  expect(reload).toMatch(/width:\s*100%;/);
+  expect(reload).toMatch(/white-space:\s*normal;/);
+  expect(reload).toMatch(/overflow-wrap:\s*anywhere;/);
 });
